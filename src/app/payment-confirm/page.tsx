@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
@@ -14,7 +14,25 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function PaymentConfirmPage() {
+// Loading skeleton that matches your processing UI
+function PaymentConfirmSkeleton() {
+  return (
+    <div className="min-h-screen bg-off-white flex items-center justify-center">
+      <div className="text-center">
+        <RefreshCw className="w-12 h-12 text-pumpkin animate-spin mx-auto mb-4" />
+        <h1 className="text-xl font-semibold text-navy-dark mb-2">
+          Verifying Payment
+        </h1>
+        <p className="text-gray-600">
+          Please wait while we confirm your transaction...
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Component that uses useSearchParams (your original content)
+function PaymentConfirmContent() {
   const searchParams = useSearchParams();
   const { createSubscription } = useSubscription();
 
@@ -168,5 +186,14 @@ export default function PaymentConfirmPage() {
         )}
       </div>
     </main>
+  );
+}
+
+// Main export with Suspense
+export default function PaymentConfirmPage() {
+  return (
+    <Suspense fallback={<PaymentConfirmSkeleton />}>
+      <PaymentConfirmContent />
+    </Suspense>
   );
 }
