@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
+/* Custom theme variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-navy: #1a2b4c;
+  --color-navy-light: #2c3e6e;
+  --color-navy-dark: #0f1a2e;
+  --color-pumpkin: #ff6400;
+  --color-pumpkin-light: #ff8533;
+  --color-salad: #8cc850;
+  --color-bottle: #003223;
+  --color-bottle-light: #1a4d3a;
+  --color-off-white: #f8fafc;
+  --color-light-gray: #e2e8f0;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Custom utilities */
+@layer utilities {
+  /* Background colors */
+  .bg-navy {
+    background-color: var(--color-navy);
+  }
+  .bg-navy-light {
+    background-color: var(--color-navy-light);
+  }
+  .bg-navy-dark {
+    background-color: var(--color-navy-dark);
+  }
+  .bg-pumpkin {
+    background-color: var(--color-pumpkin);
+  }
+  .bg-pumpkin-light {
+    background-color: var(--color-pumpkin-light);
+  }
+  .bg-salad {
+    background-color: var(--color-salad);
+  }
+  .bg-bottle {
+    background-color: var(--color-bottle);
+  }
+  .bg-bottle-light {
+    background-color: var(--color-bottle-light);
+  }
+  .bg-off-white {
+    background-color: var(--color-off-white);
+  }
+  .bg-light-gray {
+    background-color: var(--color-light-gray);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Text colors */
+  .text-navy {
+    color: var(--color-navy);
+  }
+  .text-navy-light {
+    color: var(--color-navy-light);
+  }
+  .text-pumpkin {
+    color: var(--color-pumpkin);
+  }
+  .text-salad {
+    color: var(--color-salad);
+  }
+  .text-bottle {
+    color: var(--color-bottle);
+  }
+
+  /* Gradients */
+  .bg-gradient-primary {
+    background: linear-gradient(
+      to right,
+      var(--color-navy),
+      var(--color-bottle)
+    );
+  }
+  .bg-gradient-cta {
+    background: linear-gradient(
+      to right,
+      var(--color-pumpkin),
+      var(--color-pumpkin-light)
+    );
+  }
+
+  /* Component styles */
+  .btn-primary {
+    background-color: var(--color-pumpkin);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-pumpkin-light);
+  }
+
+  .btn-secondary {
+    background-color: var(--color-navy);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+  }
+  .btn-secondary:hover {
+    background-color: var(--color-navy-light);
+  }
+
+  .card {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-light-gray);
+  }
+
+  .badge-success {
+    background-color: var(--color-salad);
+    color: var(--color-bottle);
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  .badge-pending {
+    background-color: color-mix(in srgb, var(--color-pumpkin) 20%, transparent);
+    color: var(--color-pumpkin);
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  .badge-failed {
+    background-color: #fee2e2;
+    color: #dc2626;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-light-gray);
+    border-radius: 0.5rem;
+    background-color: white;
+    color: var(--color-navy-dark);
+  }
+  .input-field:focus {
+    outline: none;
+    kerning: 2px solid var(--color-pumpkin);
+    border-color: transparent;
+  }
+
+  .table-header {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--color-off-white);
+  }
+
+  .table-cell {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    color: #4b5563;
   }
 }
 
+/* Base styles */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-off-white);
+  color: #1f2937;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-navy-dark);
+  font-weight: 700;
 }
