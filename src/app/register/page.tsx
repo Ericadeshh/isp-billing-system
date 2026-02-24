@@ -201,9 +201,9 @@ function RegisterContent() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-pumpkin rounded-full mb-4">
               <Briefcase className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <span className="text-2xl font-bold text-pumpkin mb-2">
               PPPoE Account Registration
-            </h1>
+            </span>
             <p className="text-white/80">Create your account to get started</p>
           </div>
 
