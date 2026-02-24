@@ -12,10 +12,7 @@ interface RegisterCustomerData {
 }
 
 export function useCustomer() {
-  // Queries
-  const getCustomerByPhone = (phone: string) =>
-    useQuery(api.customers.queries.getCustomerByPhone, { phone });
-
+  // Queries - always call hooks at the top level
   const getAllCustomers = useQuery(api.customers.queries.getAllCustomers);
 
   // Mutations
@@ -23,6 +20,13 @@ export function useCustomer() {
     api.customers.mutations.registerCustomer,
   );
   const updateCustomer = useMutation(api.customers.mutations.updateCustomer);
+
+  // Helper function to get customer by phone - this returns a query but doesn't execute it
+  // You'll need to use this in components with useQuery directly
+  const getCustomerByPhoneQuery = (phone: string) => {
+    // This returns the query function, not the result
+    return api.customers.queries.getCustomerByPhone;
+  };
 
   // Helper functions
   const register = async (customerData: RegisterCustomerData) => {
@@ -39,7 +43,9 @@ export function useCustomer() {
   return {
     // Data
     customers: getAllCustomers,
-    getCustomerByPhone,
+
+    // Query references (to be used with useQuery in components)
+    getCustomerByPhoneQuery,
 
     // Actions
     register,

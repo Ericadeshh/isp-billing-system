@@ -14,9 +14,11 @@ import {
   Gauge,
   Signal,
   Calendar,
+  Printer,
+  HelpCircle,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
-import Button from "@/components/ui/Button";
 
 interface UsageStats {
   speed: string;
@@ -129,7 +131,7 @@ function HotspotSuccessContent() {
     return (
       <main className="min-h-screen bg-off-white flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="w-16 h-16 text-pumpkin animate-spin mx-auto mb-6" />
+          <RefreshCw className="w-16 h-16 text-amber-500 animate-spin mx-auto mb-6" />
           <h2 className="text-2xl font-bold text-navy-dark mb-2">
             Activating Your Hotspot
           </h2>
@@ -147,14 +149,14 @@ function HotspotSuccessContent() {
         {/* Back to Home Link */}
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-pumpkin mb-6 transition-colors"
+          className="inline-flex items-center text-gray-600 hover:text-amber-500 mb-6 transition-colors duration-200"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Plans
         </Link>
 
         {/* Success Header */}
-        <div className="bg-linear-to-r from-salad to-green-600 rounded-2xl p-8 mb-8 text-white">
+        <div className="bg-linear-to-r from-amber-500 to-amber-600 rounded-2xl p-8 mb-8 text-white">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <div className="flex items-center mb-2">
@@ -171,7 +173,7 @@ function HotspotSuccessContent() {
             <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
               <p className="text-sm text-white/80">Status</p>
               <p className="font-semibold flex items-center">
-                <span className="w-2 h-2 bg-salad rounded-full mr-2 animate-pulse" />
+                <span className="w-2 h-2 bg-green-600 rounded-full mr-2 animate-pulse" />
                 Active
               </p>
             </div>
@@ -181,10 +183,10 @@ function HotspotSuccessContent() {
         {/* Credentials Card */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
           <div className="bg-navy p-4">
-            <h2 className="text-lg font-semibold text-white flex items-center">
-              <Wifi className="w-5 h-5 mr-2 text-pumpkin" />
+            <span className="text-lg font-semibold text-white flex items-center">
+              <Wifi className="w-5 h-5 mr-2 text-amber-500" />
               Your Hotspot Credentials
-            </h2>
+            </span>
           </div>
 
           <div className="p-6">
@@ -200,9 +202,10 @@ function HotspotSuccessContent() {
                       navigator.clipboard.writeText(credentials.username);
                       alert("Username copied!");
                     }}
-                    className="p-2 hover:bg-light-gray rounded-lg transition"
+                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200 group"
+                    aria-label="Copy username"
                   >
-                    <Copy className="w-4 h-4 text-gray-500" />
+                    <Copy className="w-4 h-4 text-gray-500 group-hover:text-amber-500 transition-colors duration-200" />
                   </button>
                 </div>
               </div>
@@ -218,9 +221,10 @@ function HotspotSuccessContent() {
                       navigator.clipboard.writeText(credentials.password);
                       alert("Password copied!");
                     }}
-                    className="p-2 hover:bg-light-gray rounded-lg transition"
+                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors duration-200 group"
+                    aria-label="Copy password"
                   >
-                    <Copy className="w-4 h-4 text-gray-500" />
+                    <Copy className="w-4 h-4 text-gray-500 group-hover:text-amber-500 transition-colors duration-200" />
                   </button>
                 </div>
               </div>
@@ -230,10 +234,10 @@ function HotspotSuccessContent() {
 
         {/* Usage Statistics Dashboard */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="card p-6">
+          <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between mb-2">
-              <div className="bg-pumpkin/10 p-3 rounded-lg">
-                <Gauge className="w-6 h-6 text-pumpkin" />
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <Gauge className="w-6 h-6 text-amber-600" />
               </div>
               <span className="text-2xl font-bold text-navy-dark">
                 {usage.speed}
@@ -242,10 +246,10 @@ function HotspotSuccessContent() {
             <p className="text-gray-500 text-sm">Connection Speed</p>
           </div>
 
-          <div className="card p-6">
+          <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between mb-2">
-              <div className="bg-salad/10 p-3 rounded-lg">
-                <Activity className="w-6 h-6 text-salad" />
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <Activity className="w-6 h-6 text-amber-600" />
               </div>
               <span className="text-2xl font-bold text-navy-dark">
                 {usage.dataUsed}
@@ -254,10 +258,10 @@ function HotspotSuccessContent() {
             <p className="text-gray-500 text-sm">Data Used</p>
           </div>
 
-          <div className="card p-6">
+          <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between mb-2">
-              <div className="bg-bottle/10 p-3 rounded-lg">
-                <Clock className="w-6 h-6 text-bottle" />
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <Clock className="w-6 h-6 text-amber-600" />
               </div>
               <span className="text-2xl font-bold text-navy-dark">
                 {usage.timeRemaining}
@@ -266,10 +270,10 @@ function HotspotSuccessContent() {
             <p className="text-gray-500 text-sm">Time Remaining</p>
           </div>
 
-          <div className="card p-6">
+          <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-200">
             <div className="flex items-center justify-between mb-2">
-              <div className="bg-navy/10 p-3 rounded-lg">
-                <Signal className="w-6 h-6 text-navy" />
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <Signal className="w-6 h-6 text-amber-600" />
               </div>
               <span className="text-2xl font-bold text-navy-dark">
                 {usage.sessions}
@@ -283,24 +287,24 @@ function HotspotSuccessContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* WiFi Network Info */}
           <div className="lg:col-span-2">
-            <div className="card p-6">
+            <div className="bg-white rounded-xl p-6 shadow-md">
               <h3 className="text-lg font-semibold text-navy-dark mb-4">
                 Network Details
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-light-gray">
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
                   <span className="text-gray-600">Network Name (SSID)</span>
                   <span className="font-mono font-semibold text-navy-dark">
                     Aderoute-Hotspot
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-light-gray">
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
                   <span className="text-gray-600">Security Type</span>
                   <span className="font-mono font-semibold text-navy-dark">
                     WPA2-PSK
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-light-gray">
+                <div className="flex justify-between items-center py-3 border-b border-gray-200">
                   <span className="text-gray-600">IP Assignment</span>
                   <span className="font-mono font-semibold text-navy-dark">
                     DHCP
@@ -318,41 +322,44 @@ function HotspotSuccessContent() {
 
           {/* Quick Actions */}
           <div className="lg:col-span-1">
-            <div className="card p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-navy-dark mb-4">
+            <div className="bg-white rounded-xl p-6 shadow-md">
+              <h3 className="text-lg font-semibold text-navy-dark mb-6">
                 Quick Actions
               </h3>
+              <div className="flex flex-col space-y-3">
+                <Link href="/quick-pay" className="w-full">
+                  <button className="w-full bg-amber-500 text-white py-3 px-4 rounded-xl font-medium hover:bg-amber-600 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg">
+                    Buy Another Plan
+                  </button>
+                </Link>
 
-              <Link href="/quick-pay">
-                <Button className="w-full bg-pumpkin hover:bg-pumpkin-light">
-                  Buy Another Plan
-                </Button>
-              </Link>
-
-              <button
-                onClick={() => window.print()}
-                className="w-full border-2 border-navy text-navy py-3 rounded-xl hover:bg-navy hover:text-white transition-all"
-              >
-                Print Credentials
-              </button>
-
-              <Link href="/support">
-                <button className="w-full border-2 border-light-gray text-gray-700 py-3 rounded-xl hover:bg-gray-50 transition-all">
-                  Need Help?
+                <button
+                  onClick={() => window.print()}
+                  className="w-full border-2 border-navy text-navy py-3 px-4 rounded-xl font-medium hover:bg-navy hover:text-amber-500 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center"
+                >
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print Credentials
                 </button>
-              </Link>
+
+                <Link href="/support" className="w-full">
+                  <button className="w-full border-2 border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center">
+                    <HelpCircle className="w-4 h-4 mr-2" />
+                    Need Help?
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Connection Instructions */}
-        <div className="mt-8 bg-blue-50 rounded-xl p-6 border border-blue-200">
+        <div className="mt-8 bg-amber-50 rounded-xl p-6 border border-amber-200">
           <h3 className="font-semibold text-navy-dark mb-4 text-lg">
             How to Connect
           </h3>
           <div className="grid md:grid-cols-3 gap-4">
             <div className="flex items-start">
-              <span className="bg-pumpkin text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
+              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
                 1
               </span>
               <div>
@@ -363,7 +370,7 @@ function HotspotSuccessContent() {
               </div>
             </div>
             <div className="flex items-start">
-              <span className="bg-pumpkin text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
+              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
                 2
               </span>
               <div>
@@ -374,7 +381,7 @@ function HotspotSuccessContent() {
               </div>
             </div>
             <div className="flex items-start">
-              <span className="bg-pumpkin text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
+              <span className="bg-amber-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold mr-3 shrink-0 mt-0.5">
                 3
               </span>
               <div>
@@ -388,9 +395,10 @@ function HotspotSuccessContent() {
         </div>
 
         {/* Important Note */}
-        <div className="mt-6 p-4 bg-pumpkin/5 rounded-xl border border-pumpkin/10">
-          <p className="text-sm text-gray-600 text-center">
-            ⚠️ <span className="font-semibold">Save these credentials.</span>{" "}
+        <div className="mt-6 p-4 bg-amber-50/50 rounded-xl border border-amber-200">
+          <p className="text-sm text-gray-700 text-center flex items-center justify-center">
+            <AlertCircle className="w-4 h-4 mr-2 text-amber-500" />
+            <span className="font-semibold">Save these credentials.</span>&nbsp;
             You'll need them to reconnect. Your session expires at{" "}
             {usage.expiryTime}.
           </p>

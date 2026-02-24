@@ -4,7 +4,14 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { usePlans } from "@/hooks/usePlans";
 import { Plan } from "@/types";
-import { Wifi, ExternalLink, RefreshCw, ArrowLeft } from "lucide-react";
+import {
+  Wifi,
+  ExternalLink,
+  RefreshCw,
+  ArrowLeft,
+  Shield,
+  Phone,
+} from "lucide-react";
 import Link from "next/link";
 
 // Environment variables with proper fallbacks
@@ -46,7 +53,7 @@ function QuickPaySkeleton() {
 
         {/* Phone input card skeleton */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-navy to-bottle p-4">
+          <div className="bg-linear-to-r from-navy to-bottle p-4">
             <div className="h-6 w-48 bg-white/20 rounded mx-auto animate-pulse" />
           </div>
           <div className="p-6 space-y-4">
@@ -104,7 +111,7 @@ function QuickPayContent() {
     );
 
     // Redirect to M-Pesa app
-    window.location.href = `${MPESA_APP_URL}/pay?amount=${selectedPlan.price}&phone=${formattedPhone}&returnUrl=${returnUrl}&service=Aderoute%20Hotspot`;
+    window.location.href = `${MPESA_APP_URL}/pay?amount=${selectedPlan.price}&phone=${formattedPhone}&returnUrl=${returnUrl}&service=Aderoute%20Hotspot&fixed=true`;
   };
 
   if (isLoading) {
@@ -144,9 +151,9 @@ function QuickPayContent() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
           <div className="bg-navy p-4 text-center">
             <Wifi className="w-8 h-8 text-pumpkin mx-auto mb-2" />
-            <h1 className="text-xl font-bold text-white">
+            <span className="text-xl font-bold text-pumpkin">
               {selectedPlan.name}
-            </h1>
+            </span>
           </div>
 
           <div className="p-6 space-y-4">
@@ -159,14 +166,14 @@ function QuickPayContent() {
 
             <div className="flex justify-between items-center pb-4 border-b border-gray-200">
               <span className="text-gray-600">Speed:</span>
-              <span className="font-medium text-navy-dark">
+              <span className="font-medium text-white">
                 {selectedPlan.speed}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Duration:</span>
-              <span className="font-medium text-navy-dark">
+              <span className="font-medium text-white">
                 {selectedPlan.duration < 1
                   ? `${selectedPlan.duration * 24} hours`
                   : selectedPlan.duration === 1
@@ -179,7 +186,7 @@ function QuickPayContent() {
 
         {/* Phone Number Input */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-navy to-bottle p-4 text-center">
+          <div className="bg-linear-to-r from-navy to-bottle p-4 text-center">
             <h2 className="text-lg font-semibold text-white">
               Enter Your M-Pesa Number
             </h2>
@@ -189,8 +196,9 @@ function QuickPayContent() {
             <div className="mb-4">
               <label
                 htmlFor="phone"
-                className="block text-sm font-medium text-navy-dark mb-2"
+                className="block text-sm font-medium text-navy-dark mb-2 items-center"
               >
+                <Phone className="w-4 h-4 mr-2 text-pumpkin" />
                 Phone Number
               </label>
               <input
@@ -203,7 +211,8 @@ function QuickPayContent() {
                 autoFocus
                 aria-label="M-Pesa phone number"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-gray-500 mt-2 flex items-center">
+                <Phone className="w-3 h-3 mr-1 text-pumpkin" />
                 You'll receive an STK push on this number
               </p>
             </div>
@@ -229,16 +238,18 @@ function QuickPayContent() {
 
             {/* Environment Indicator - Only shown in development */}
             {process.env.NODE_ENV === "development" && (
-              <p className="text-xs text-blue-500 text-center mt-4">
-                🔧 Development mode: Using{" "}
+              <p className="text-xs text-blue-500 text-center mt-4 flex items-center justify-center">
+                <Shield className="w-3 h-3 mr-1" />
+                Development mode: Using{" "}
                 {MPESA_APP_URL.includes("localhost") ? "local" : "live"} M-Pesa
                 app
               </p>
             )}
 
             {/* Security Note */}
-            <p className="text-xs text-gray-400 text-center mt-4">
-              🔒 You'll be redirected to our secure payment page
+            <p className="text-xs text-gray-400 text-center mt-4 flex items-center justify-center">
+              <Shield className="w-3 h-3 mr-1" />
+              You'll be redirected to our secure payment page
             </p>
           </div>
         </div>
