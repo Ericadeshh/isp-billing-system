@@ -18,11 +18,13 @@ import Link from "next/link";
 const MPESA_APP_URL =
   process.env.NEXT_PUBLIC_MPESA_APP_URL ||
   "https://mpesa-payment-app-navy.vercel.app";
+
+// ISP_APP_URL - uses environment variable with correct production fallback
 const ISP_APP_URL =
   process.env.NEXT_PUBLIC_ISP_APP_URL ||
   (process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
-    : "https://your-isp-app.vercel.app");
+    : "https://isp-billing-system-sand.vercel.app"); // ✅ CORRECT production URL
 
 // Loading skeleton component
 function QuickPaySkeleton() {
@@ -110,7 +112,7 @@ function QuickPayContent() {
       `${ISP_APP_URL}/hotspot/success?phone=${formattedPhone}&plan=${selectedPlan._id}&amount=${selectedPlan.price}`,
     );
 
-    // Redirect to M-Pesa app
+    // Redirect to M-Pesa app with fixed amount
     window.location.href = `${MPESA_APP_URL}/pay?amount=${selectedPlan.price}&phone=${formattedPhone}&returnUrl=${returnUrl}&service=Aderoute%20Hotspot&fixed=true`;
   };
 
@@ -151,9 +153,9 @@ function QuickPayContent() {
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
           <div className="bg-navy p-4 text-center">
             <Wifi className="w-8 h-8 text-pumpkin mx-auto mb-2" />
-            <span className="text-xl font-bold text-pumpkin">
+            <h1 className="text-xl font-bold text-white">
               {selectedPlan.name}
-            </span>
+            </h1>
           </div>
 
           <div className="p-6 space-y-4">
@@ -166,14 +168,14 @@ function QuickPayContent() {
 
             <div className="flex justify-between items-center pb-4 border-b border-gray-200">
               <span className="text-gray-600">Speed:</span>
-              <span className="font-medium text-white">
+              <span className="font-medium text-navy-dark">
                 {selectedPlan.speed}
               </span>
             </div>
 
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Duration:</span>
-              <span className="font-medium text-white">
+              <span className="font-medium text-navy-dark">
                 {selectedPlan.duration < 1
                   ? `${selectedPlan.duration * 24} hours`
                   : selectedPlan.duration === 1
