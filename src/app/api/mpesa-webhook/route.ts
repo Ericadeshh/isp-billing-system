@@ -1,52 +1,29 @@
 import { ConvexHttpClient } from "convex/browser";
 import { NextResponse } from "next/server";
 
-// Initialize Convex client outside the handler for reuse
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-// Explicitly name the handler for POST requests
 export async function POST(request: Request) {
-  const startTime = Date.now();
   console.log(`📨 [${new Date().toISOString()}] Webhook POST received`);
 
   try {
-    // 1. Parse and log the raw body first
-    const rawBody = await request.text();
-    console.log(`Raw body: ${rawBody}`);
+    // Parse request body
+    const body = await request.json();
+    console.log("📦 Webhook body:", body);
 
-    let body;
-    try {
-      body = JSON.parse(rawBody);
-    } catch (e) {
-      console.error("❌ Failed to parse JSON body:", e);
-      return NextResponse.json(
-        { success: false, error: "Invalid JSON" },
-        { status: 400 },
-      );
-    }
+    const { transactionId, amount, phone, planCode, customerId, status } = body;
 
-    console.log("Parsed body:", body);
-
-    // 2. Destructure with defaults
-    const {
-      transactionId = "unknown",
-      amount = 0,
-      phone = "unknown",
-      planId = "unknown",
-      customerId = "unknown",
-      status = "failed",
-    } = body;
-
-    // 3. Validate essential fields
+    // Validate required fields
     const missingFields = [];
-    if (!body.transactionId) missingFields.push("transactionId");
-    if (!body.amount) missingFields.push("amount");
-    if (!body.phone) missingFields.push("phone");
-    if (!body.planId) missingFields.push("planId");
-    if (!body.customerId) missingFields.push("customerId");
+    if (!transactionId) missingFields.push("transactionId");
+    if (!amount) missingFields.push("amount");
+    if (!phone) missingFields.push("phone");
+    if (!planCode) missingFields.push("planCode");
+    if (!customerId) missingFields.push("customerId");
+    if (!status) missingFields.push("status");
 
     if (missingFields.length > 0) {
-      console.error(`❌ Missing required fields: ${missingFields.join(", ")}`);
+      console.error(`❌ Missing fields: ${missingFields.join(", ")}`);
       return NextResponse.json(
         {
           success: false,
@@ -56,84 +33,67 @@ export async function POST(request: Request) {
       );
     }
 
-    // 4. Dynamically import API to avoid potential circular dependencies
+    // Import Convex API
     const { api } = await import("../../../../convex/_generated/api");
 
-    // 5. Get plan details
-    console.log(`🔍 Fetching plan: ${planId}`);
-    let plan;
-    try {
-      plan = await convex.query(api.plans.queries.getPlan, { planId });
-    } catch (queryError) {
-      console.error(`❌ Convex query failed for plan ${planId}:`, queryError);
-      return NextResponse.json(
-        { success: false, error: "Failed to query plan" },
-        { status: 500 },
-      );
-    }
+    // Get all plans
+    console.log(`🔍 Fetching all plans to find match for amount: ${amount}`);
+    const allPlans = await convex.query(api.plans.queries.getAllPlans);
+
+    // Find plan that matches the amount
+    // This works because your plans have unique prices: 10, 25, 45, 80, 350, 1000
+    const plan = allPlans.find((p) => p.price === Number(amount));
 
     if (!plan) {
-      console.error(`❌ Plan not found in database: ${planId}`);
+      console.error(`❌ No plan found for amount: ${amount}`);
+      console.log(
+        "Available plans:",
+        allPlans.map((p) => ({ name: p.name, price: p.price })),
+      );
       return NextResponse.json(
-        { success: false, error: "Plan not found" },
+        { success: false, error: "Plan not found for this amount" },
         { status: 404 },
       );
     }
-    console.log(`✅ Plan found: ${plan.name}`);
 
-    // 6. Record payment
+    console.log(`✅ Plan resolved: ${plan.name} (ID: ${plan._id})`);
+
+    // Record payment in database
     console.log(`💾 Recording payment for transaction: ${transactionId}`);
-    try {
-      await convex.mutation(api.payments.mutations.recordPayment, {
-        transactionId,
-        amount: Number(amount),
-        phoneNumber: phone,
-        customerId,
-        planId,
-        planName: plan.name,
-        userName: `User-${phone.slice(-4)}`,
-        status: status === "success" ? "completed" : "failed",
-        paymentMethod: "M-Pesa",
-        serviceType: plan.duration <= 1 ? "hotspot" : "pppoe",
-      });
-      console.log(`✅ Payment recorded: ${transactionId}`);
-    } catch (paymentError) {
-      console.error(`❌ Failed to record payment:`, paymentError);
-      // Continue? Or fail? Let's try to continue to subscription
-    }
+    await convex.mutation(api.payments.mutations.recordPayment, {
+      transactionId,
+      amount: Number(amount),
+      phoneNumber: phone,
+      customerId,
+      planId: plan._id,
+      planName: plan.name,
+      userName: `User-${phone.slice(-4)}`,
+      status: status === "success" ? "completed" : "failed",
+      paymentMethod: "M-Pesa",
+      serviceType: plan.duration <= 1 ? "hotspot" : "pppoe",
+    });
+    console.log(`✅ Payment recorded: ${transactionId}`);
 
-    // 7. If successful, create subscription
+    // If payment successful, create subscription
     if (status === "success") {
       console.log(`📝 Creating subscription for customer: ${customerId}`);
-      try {
-        await convex.mutation(api.subscriptions.mutations.createSubscription, {
-          customerId,
-          planId,
-          mpesaTransactionId: transactionId,
-          autoRenew: plan.duration > 1,
-        });
-        console.log(`✅ Subscription created for customer: ${customerId}`);
-      } catch (subError) {
-        console.error(`❌ Failed to create subscription:`, subError);
-        return NextResponse.json(
-          { success: false, error: "Payment recorded but subscription failed" },
-          { status: 500 },
-        );
-      }
+      await convex.mutation(api.subscriptions.mutations.createSubscription, {
+        customerId,
+        planId: plan._id,
+        mpesaTransactionId: transactionId,
+        autoRenew: plan.duration > 1,
+      });
+      console.log(`✅ Subscription created for customer: ${customerId}`);
     }
-
-    const duration = Date.now() - startTime;
-    console.log(`✅ Webhook processed successfully in ${duration}ms`);
 
     return NextResponse.json({
       success: true,
-      message: "Webhook processed",
       planName: plan.name,
-      duration: `${duration}ms`,
+      planId: plan._id,
+      message: "Webhook processed successfully",
     });
   } catch (error) {
-    const duration = Date.now() - startTime;
-    console.error(`❌ [${duration}ms] Unhandled webhook error:`, error);
+    console.error("❌ Webhook error:", error);
     return NextResponse.json(
       {
         success: false,
@@ -144,7 +104,7 @@ export async function POST(request: Request) {
   }
 }
 
-// Optional: Handle other methods explicitly (good practice)
+// Handle GET requests
 export async function GET() {
   return NextResponse.json(
     { error: "Method not allowed. Use POST." },
@@ -152,6 +112,7 @@ export async function GET() {
   );
 }
 
+// Handle other methods
 export async function PUT() {
   return NextResponse.json(
     { error: "Method not allowed. Use POST." },
