@@ -20,12 +20,8 @@ export async function POST(request: Request) {
     if (!planCode) missingFields.push("planCode");
     if (!status) missingFields.push("status");
 
-    // Customer ID is only required for real payments, not tests
-    if (
-      status === "success" &&
-      !customerId &&
-      !transactionId.startsWith("TEST_")
-    ) {
+    // Customer ID is required for real payments
+    if (!customerId && !transactionId.startsWith("TEST_")) {
       missingFields.push("customerId");
     }
 
@@ -64,7 +60,7 @@ export async function POST(request: Request) {
 
     console.log(`✅ Plan resolved: ${plan.name} (ID: ${plan._id})`);
 
-    // For test transactions, return success without database writes
+    // For test transactions, still return success but log that it's a test
     if (transactionId.startsWith("TEST_")) {
       console.log("🧪 Test transaction detected - skipping database writes");
       return NextResponse.json({
@@ -75,8 +71,10 @@ export async function POST(request: Request) {
       });
     }
 
-    // For real transactions, proceed with database writes
-    console.log(`💾 Recording payment for transaction: ${transactionId}`);
+    // For REAL transactions, ALWAYS record the payment
+    console.log(`💾 Recording REAL payment for transaction: ${transactionId}`);
+
+    // Step 1: Record the payment
     await convex.mutation(api.payments.mutations.recordPayment, {
       transactionId,
       amount: Number(amount),
@@ -91,6 +89,7 @@ export async function POST(request: Request) {
     });
     console.log(`✅ Payment recorded: ${transactionId}`);
 
+    // Step 2: If payment successful, create subscription
     if (status === "success") {
       console.log(`📝 Creating subscription for customer: ${customerId}`);
       await convex.mutation(api.subscriptions.mutations.createSubscription, {
@@ -106,7 +105,7 @@ export async function POST(request: Request) {
       success: true,
       planName: plan.name,
       planId: plan._id,
-      message: "Webhook processed successfully",
+      message: "Real payment processed successfully",
     });
   } catch (error) {
     console.error("❌ Webhook error:", error);
