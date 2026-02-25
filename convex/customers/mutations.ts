@@ -10,6 +10,13 @@ export const registerCustomer = mutation({
     routerIp: v.optional(v.string()),
     macAddress: v.optional(v.string()),
     planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("inactive"),
+        v.literal("suspended"),
+      ),
+    ),
   },
   handler: async (ctx, args) => {
     // Check if customer already exists
@@ -24,7 +31,7 @@ export const registerCustomer = mutation({
 
     return await ctx.db.insert("customers", {
       ...args,
-      status: "active", // Default status for new customers
+      status: args.status || "active", // Default to active if not provided
       created: Date.now(),
     });
   },

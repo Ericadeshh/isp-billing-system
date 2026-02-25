@@ -20,11 +20,6 @@ export async function POST(request: Request) {
     if (!planCode) missingFields.push("planCode");
     if (!status) missingFields.push("status");
 
-    // Customer ID is required for real payments
-    if (!customerId && !transactionId.startsWith("TEST_")) {
-      missingFields.push("customerId");
-    }
-
     if (missingFields.length > 0) {
       console.error(`❌ Missing fields: ${missingFields.join(", ")}`);
       return NextResponse.json(
@@ -39,7 +34,7 @@ export async function POST(request: Request) {
     // Import Convex API
     const { api } = await import("../../../../convex/_generated/api");
 
-    // Get all plans
+    // Step 1: Get all plans
     console.log(`🔍 Fetching all plans to find match for amount: ${amount}`);
     const allPlans = await convex.query(api.plans.queries.getAllPlans);
 
@@ -48,10 +43,6 @@ export async function POST(request: Request) {
 
     if (!plan) {
       console.error(`❌ No plan found for amount: ${amount}`);
-      console.log(
-        "Available plans:",
-        allPlans.map((p) => ({ name: p.name, price: p.price })),
-      );
       return NextResponse.json(
         { success: false, error: "Plan not found for this amount" },
         { status: 404 },
@@ -60,26 +51,45 @@ export async function POST(request: Request) {
 
     console.log(`✅ Plan resolved: ${plan.name} (ID: ${plan._id})`);
 
-    // For test transactions, still return success but log that it's a test
-    if (transactionId.startsWith("TEST_")) {
-      console.log("🧪 Test transaction detected - skipping database writes");
-      return NextResponse.json({
-        success: true,
-        planName: plan.name,
-        planId: plan._id,
-        message: "Test webhook processed successfully (no database changes)",
-      });
+    // Step 2: Check if customer exists, create if not
+    let finalCustomerId = customerId;
+
+    if (!finalCustomerId) {
+      console.log(
+        `👤 No customerId provided, checking if customer exists with phone: ${phone}`,
+      );
+
+      // Try to find existing customer by phone
+      const existingCustomer = await convex.query(
+        api.customers.queries.getCustomerByPhone,
+        { phone },
+      );
+
+      if (existingCustomer) {
+        finalCustomerId = existingCustomer._id;
+        console.log(`✅ Found existing customer: ${finalCustomerId}`);
+      } else {
+        // Create new customer WITHOUT status field
+        console.log(`🆕 Creating new customer for phone: ${phone}`);
+        finalCustomerId = await convex.mutation(
+          api.customers.mutations.registerCustomer,
+          {
+            name: `User-${phone.slice(-4)}`,
+            phone: phone,
+            // Remove status from here - it will default to "active" in the mutation
+          },
+        );
+        console.log(`✅ Created new customer with ID: ${finalCustomerId}`);
+      }
     }
 
-    // For REAL transactions, ALWAYS record the payment
-    console.log(`💾 Recording REAL payment for transaction: ${transactionId}`);
-
-    // Step 1: Record the payment
+    // Step 3: Record the payment
+    console.log(`💾 Recording payment for transaction: ${transactionId}`);
     await convex.mutation(api.payments.mutations.recordPayment, {
       transactionId,
       amount: Number(amount),
       phoneNumber: phone,
-      customerId,
+      customerId: finalCustomerId,
       planId: plan._id,
       planName: plan.name,
       userName: `User-${phone.slice(-4)}`,
@@ -89,23 +99,24 @@ export async function POST(request: Request) {
     });
     console.log(`✅ Payment recorded: ${transactionId}`);
 
-    // Step 2: If payment successful, create subscription
+    // Step 4: If payment successful, create subscription
     if (status === "success") {
-      console.log(`📝 Creating subscription for customer: ${customerId}`);
+      console.log(`📝 Creating subscription for customer: ${finalCustomerId}`);
       await convex.mutation(api.subscriptions.mutations.createSubscription, {
-        customerId,
+        customerId: finalCustomerId,
         planId: plan._id,
         mpesaTransactionId: transactionId,
         autoRenew: plan.duration > 1,
       });
-      console.log(`✅ Subscription created for customer: ${customerId}`);
+      console.log(`✅ Subscription created for customer: ${finalCustomerId}`);
     }
 
     return NextResponse.json({
       success: true,
       planName: plan.name,
       planId: plan._id,
-      message: "Real payment processed successfully",
+      customerId: finalCustomerId,
+      message: "Payment processed successfully",
     });
   } catch (error) {
     console.error("❌ Webhook error:", error);
