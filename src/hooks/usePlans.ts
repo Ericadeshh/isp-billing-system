@@ -9,6 +9,7 @@ export interface PlanFormData {
   duration: number;
   dataCap?: number;
   description: string;
+  planType: "hotspot" | "pppoe"; // Add this required field
 }
 
 export function usePlans() {
@@ -48,6 +49,7 @@ export function usePlans() {
     if (days === 30) return "Monthly";
     if (days === 90) return "Quarterly";
     if (days === 365) return "Yearly";
+    if (days < 1) return `${days * 24} Hours`;
     return `${days} days`;
   };
 

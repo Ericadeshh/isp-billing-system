@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { Id } from "../../../../convex/_generated/dataModel";
 import {
   Wifi,
   Users,
@@ -24,6 +23,12 @@ import {
   Menu,
   X,
   Briefcase,
+  TrendingUp,
+  Zap,
+  Shield,
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,7 +49,7 @@ interface Stats {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch data from Convex
@@ -81,7 +86,7 @@ export default function AdminDashboard() {
       })?.length || 0,
   };
 
-  // Mock router data (replace with actual MikroTik data)
+  // Mock router data
   const routerStatus = {
     online: true,
     cpu: 23,
@@ -91,11 +96,53 @@ export default function AdminDashboard() {
     bandwidth: "45/100 Mbps",
   };
 
+  // Card color themes
+  const cardThemes = [
+    {
+      bg: "bg-gradient-to-br from-blue-500 to-blue-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      valueColor: "text-white",
+      labelColor: "text-blue-100",
+    },
+    {
+      bg: "bg-gradient-to-br from-emerald-500 to-emerald-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      valueColor: "text-white",
+      labelColor: "text-emerald-100",
+    },
+    {
+      bg: "bg-gradient-to-br from-amber-500 to-amber-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      valueColor: "text-white",
+      labelColor: "text-amber-100",
+    },
+    {
+      bg: "bg-gradient-to-br from-purple-500 to-purple-600",
+      iconBg: "bg-white/20",
+      textColor: "text-white",
+      valueColor: "text-white",
+      labelColor: "text-purple-100",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} bg-navy text-white w-64`}
+        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-navy text-white transform transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
       >
         <div className="flex items-center justify-between p-4 border-b border-white/10">
           <div className="flex items-center space-x-2">
@@ -112,7 +159,7 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-1">
           <Link
             href="/admin/dashboard"
             className="flex items-center space-x-3 px-4 py-3 bg-amber-500/20 text-amber-500 rounded-lg"
@@ -169,35 +216,33 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <div
-        className={`${sidebarOpen ? "lg:ml-64" : ""} transition-margin duration-300`}
-      >
+      <div className="lg:ml-64 min-h-screen">
         {/* Top Bar */}
         <header className="bg-white shadow-sm sticky top-0 z-30">
           <div className="flex items-center justify-between px-4 py-3">
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
             >
               <Menu className="w-5 h-5 text-gray-600" />
             </button>
 
-            <div className="flex items-center space-x-4">
-              <div className="relative">
+            <div className="flex-1 flex justify-end items-center space-x-4">
+              <div className="relative hidden sm:block">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 w-64"
                 />
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center">
                   <UserCog className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-sm font-medium hidden md:block">
+                <span className="text-sm font-medium hidden sm:block">
                   Admin
                 </span>
               </div>
@@ -206,128 +251,118 @@ export default function AdminDashboard() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
           {/* Welcome Section */}
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
               Welcome back, Admin
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Here's what's happening with your network today.
             </p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="bg-amber-100 p-3 rounded-lg">
-                  <Users className="w-6 h-6 text-amber-600" />
+          {/* Stats Cards - Responsive Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            {[
+              {
+                icon: <Users className="w-6 h-6 text-white" />,
+                label: "Total Users",
+                value: stats.totalUsers,
+                subtext: `${stats.activeUsers} active`,
+                theme: cardThemes[0],
+              },
+              {
+                icon: <DollarSign className="w-6 h-6 text-white" />,
+                label: "Total Revenue",
+                value: `KES ${stats.totalRevenue.toLocaleString()}`,
+                subtext: `+KES ${stats.todayRevenue.toLocaleString()} today`,
+                theme: cardThemes[1],
+              },
+              {
+                icon: <CreditCard className="w-6 h-6 text-white" />,
+                label: "Transactions",
+                value: stats.totalTransactions,
+                subtext: `${stats.completedTransactions} completed · ${stats.pendingTransactions} pending`,
+                theme: cardThemes[2],
+              },
+              {
+                icon: <Globe className="w-6 h-6 text-white" />,
+                label: "Active Connections",
+                value: stats.activeHotspots + stats.activePPPoE,
+                subtext: `${stats.activeHotspots} hotspot · ${stats.activePPPoE} PPPoE`,
+                theme: cardThemes[3],
+              },
+            ].map((card, index) => (
+              <div
+                key={index}
+                className={`${card.theme.bg} rounded-xl shadow-lg p-4 sm:p-6 transition-transform hover:scale-105 duration-300`}
+              >
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
+                  <div className={`${card.theme.iconBg} p-2 sm:p-3 rounded-lg`}>
+                    {card.icon}
+                  </div>
+                  <span
+                    className={`${card.theme.valueColor} text-xl sm:text-2xl font-bold`}
+                  >
+                    {card.value}
+                  </span>
                 </div>
-                <span className="text-2xl font-bold text-gray-800">
-                  {stats.totalUsers}
-                </span>
+                <p
+                  className={`${card.theme.labelColor} text-xs sm:text-sm font-medium mb-1`}
+                >
+                  {card.label}
+                </p>
+                <p className={`${card.theme.textColor} text-xs opacity-90`}>
+                  {card.subtext}
+                </p>
               </div>
-              <p className="text-gray-600">Total Users</p>
-              <p className="text-sm text-green-600 mt-2">
-                {stats.activeUsers} active
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="bg-amber-100 p-3 rounded-lg">
-                  <DollarSign className="w-6 h-6 text-amber-600" />
-                </div>
-                <span className="text-2xl font-bold text-gray-800">
-                  KES {stats.totalRevenue.toLocaleString()}
-                </span>
-              </div>
-              <p className="text-gray-600">Total Revenue</p>
-              <p className="text-sm text-green-600 mt-2">
-                +KES {stats.todayRevenue.toLocaleString()} today
-              </p>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="bg-amber-100 p-3 rounded-lg">
-                  <CreditCard className="w-6 h-6 text-amber-600" />
-                </div>
-                <span className="text-2xl font-bold text-gray-800">
-                  {stats.totalTransactions}
-                </span>
-              </div>
-              <p className="text-gray-600">Transactions</p>
-              <div className="flex gap-2 mt-2">
-                <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                  {stats.completedTransactions} completed
-                </span>
-                <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                  {stats.pendingTransactions} pending
-                </span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <div className="bg-amber-100 p-3 rounded-lg">
-                  <Globe className="w-6 h-6 text-amber-600" />
-                </div>
-                <span className="text-2xl font-bold text-gray-800">
-                  {stats.activeHotspots + stats.activePPPoE}
-                </span>
-              </div>
-              <p className="text-gray-600">Active Connections</p>
-              <p className="text-sm text-blue-600 mt-2">
-                {stats.activeHotspots} hotspot · {stats.activePPPoE} PPPoE
-              </p>
-            </div>
+            ))}
           </div>
 
           {/* Router Status & Quick Actions */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {/* Router Status */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-200">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <Server className="w-5 h-5 mr-2 text-amber-500" />
                 Router Status
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <p className="flex items-center text-green-600">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Status</p>
+                  <p className="flex items-center text-green-600 text-sm font-medium">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
                     Online
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">CPU</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">CPU</p>
+                  <p className="font-medium text-gray-800 text-sm">
                     {routerStatus.cpu}%
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Memory</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Memory</p>
+                  <p className="font-medium text-gray-800 text-sm">
                     {routerStatus.memory}%
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Uptime</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Uptime</p>
+                  <p className="font-medium text-gray-800 text-sm">
                     {routerStatus.uptime}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Connections</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Connections</p>
+                  <p className="font-medium text-gray-800 text-sm">
                     {routerStatus.connections}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Bandwidth</p>
-                  <p className="font-medium text-gray-800">
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Bandwidth</p>
+                  <p className="font-medium text-gray-800 text-sm">
                     {routerStatus.bandwidth}
                   </p>
                 </div>
@@ -341,37 +376,45 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-200">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
                 Quick Actions
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <Link
                   href="/admin/users/new"
                   className="flex items-center justify-between p-3 bg-amber-50 rounded-lg hover:bg-amber-100 transition"
                 >
-                  <span className="text-amber-700">Add New User</span>
+                  <span className="text-sm sm:text-base text-amber-700">
+                    Add New User
+                  </span>
                   <Users className="w-4 h-4 text-amber-500" />
                 </Link>
                 <Link
                   href="/admin/plans/new"
                   className="flex items-center justify-between p-3 bg-amber-50 rounded-lg hover:bg-amber-100 transition"
                 >
-                  <span className="text-amber-700">Create Plan</span>
+                  <span className="text-sm sm:text-base text-amber-700">
+                    Create Plan
+                  </span>
                   <Briefcase className="w-4 h-4 text-amber-500" />
                 </Link>
                 <Link
                   href="/admin/mikrotik/sync"
                   className="flex items-center justify-between p-3 bg-amber-50 rounded-lg hover:bg-amber-100 transition"
                 >
-                  <span className="text-amber-700">Sync Router</span>
+                  <span className="text-sm sm:text-base text-amber-700">
+                    Sync Router
+                  </span>
                   <RefreshCw className="w-4 h-4 text-amber-500" />
                 </Link>
                 <Link
                   href="/admin/reports"
                   className="flex items-center justify-between p-3 bg-amber-50 rounded-lg hover:bg-amber-100 transition"
                 >
-                  <span className="text-amber-700">Generate Report</span>
+                  <span className="text-sm sm:text-base text-amber-700">
+                    Generate Report
+                  </span>
                   <Download className="w-4 h-4 text-amber-500" />
                 </Link>
               </div>
@@ -379,82 +422,85 @@ export default function AdminDashboard() {
           </div>
 
           {/* Recent Transactions */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-200">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800">
                 Recent Transactions
               </h2>
               <Link
                 href="/admin/transactions"
-                className="text-amber-500 hover:text-amber-600 text-sm"
+                className="text-amber-500 hover:text-amber-600 text-xs sm:text-sm"
               >
                 View All
               </Link>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      User
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Plan
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {payments?.slice(0, 5).map((payment) => (
-                    <tr key={payment._id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {new Date(payment.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {payment.userName || payment.phoneNumber}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {payment.planName || "N/A"}
-                      </td>
-                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                        KES {payment.amount?.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                          ${
-                            payment.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : payment.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {payment.status === "completed" && (
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                          )}
-                          {payment.status === "pending" && (
-                            <Clock className="w-3 h-3 mr-1" />
-                          )}
-                          {payment.status === "failed" && (
-                            <XCircle className="w-3 h-3 mr-1" />
-                          )}
-                          {payment.status}
-                        </span>
-                      </td>
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <div className="inline-block min-w-full align-middle">
+                <table className="min-w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Date
+                      </th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        User
+                      </th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Plan
+                      </th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Amount
+                      </th>
+                      <th className="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                        Status
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {payments?.slice(0, 5).map((payment) => (
+                      <tr key={payment._id} className="hover:bg-gray-50">
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                          {new Date(payment.createdAt).toLocaleDateString()}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                          {payment.userName || payment.phoneNumber}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-gray-900">
+                          {payment.planName || "N/A"}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900">
+                          KES {payment.amount?.toLocaleString()}
+                        </td>
+                        <td className="px-3 sm:px-4 py-2 sm:py-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              payment.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : payment.status === "pending"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {payment.status === "completed" && (
+                              <CheckCircle className="w-3 h-3 mr-1" />
+                            )}
+                            {payment.status === "pending" && (
+                              <Clock className="w-3 h-3 mr-1" />
+                            )}
+                            {payment.status === "failed" && (
+                              <XCircle className="w-3 h-3 mr-1" />
+                            )}
+                            <span className="hidden sm:inline">
+                              {payment.status}
+                            </span>
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </main>
@@ -463,7 +509,7 @@ export default function AdminDashboard() {
   );
 }
 
-// Add missing LogOut import
+// LogOut Icon Component
 const LogOut = (props: any) => (
   <svg
     {...props}
