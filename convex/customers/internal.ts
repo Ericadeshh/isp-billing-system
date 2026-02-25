@@ -23,6 +23,7 @@ export const updateNetworkCredentials = internalMutation({
       hotspotUsername: args.hotspotUsername,
       hotspotPassword: args.hotspotPassword,
       hotspotIp: args.hotspotIp,
+      status: "active", // Ensure status is active
     });
 
     return customer._id;
@@ -51,6 +52,7 @@ export const clearNetworkCredentials = internalMutation({
       hotspotUsername: undefined,
       hotspotPassword: undefined,
       hotspotIp: undefined,
+      // Don't change status here - they might still be active via other means
     });
 
     return customer._id;

@@ -11,6 +11,7 @@ export const seedPlans = mutation({
     }
 
     const plans = [
+      // Hotspot Plans (hourly/daily)
       {
         name: "1 Hour Pass",
         price: 10,
@@ -18,6 +19,7 @@ export const seedPlans = mutation({
         duration: 1 / 24, // 1 hour in days
         description: "Perfect for quick browsing and checking emails",
         isActive: true,
+        planType: "hotspot" as const,
       },
       {
         name: "3 Hours Pass",
@@ -26,6 +28,7 @@ export const seedPlans = mutation({
         duration: 3 / 24,
         description: "Ideal for a movie or extended browsing session",
         isActive: true,
+        planType: "hotspot" as const,
       },
       {
         name: "6 Hours Pass",
@@ -34,6 +37,7 @@ export const seedPlans = mutation({
         duration: 6 / 24,
         description: "Great for work or study sessions",
         isActive: true,
+        planType: "hotspot" as const,
       },
       {
         name: "24 Hours Pass",
@@ -42,7 +46,9 @@ export const seedPlans = mutation({
         duration: 1,
         description: "Full day of unlimited browsing",
         isActive: true,
+        planType: "hotspot" as const,
       },
+      // PPPoE Plans (monthly)
       {
         name: "Weekly Pass",
         price: 350,
@@ -50,6 +56,7 @@ export const seedPlans = mutation({
         duration: 7,
         description: "Best value for regular users",
         isActive: true,
+        planType: "pppoe" as const,
       },
       {
         name: "Monthly Pass",
@@ -58,6 +65,7 @@ export const seedPlans = mutation({
         duration: 30,
         description: "Unlimited internet for a month",
         isActive: true,
+        planType: "pppoe" as const,
       },
     ];
 

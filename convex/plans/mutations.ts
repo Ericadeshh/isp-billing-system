@@ -10,6 +10,7 @@ export const createPlan = mutation({
     duration: v.number(),
     dataCap: v.optional(v.number()),
     description: v.string(),
+    planType: v.union(v.literal("hotspot"), v.literal("pppoe")),
   },
   handler: async (ctx, args) => {
     return await ctx.db.insert("plans", {
@@ -30,6 +31,7 @@ export const updatePlan = mutation({
     dataCap: v.optional(v.number()),
     description: v.optional(v.string()),
     isActive: v.optional(v.boolean()),
+    planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
   },
   handler: async (ctx, args) => {
     const { planId, ...updates } = args;

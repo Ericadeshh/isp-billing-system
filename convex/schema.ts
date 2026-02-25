@@ -11,6 +11,8 @@ export default defineSchema({
     dataCap: v.optional(v.number()),
     description: v.string(),
     isActive: v.boolean(),
+    // Make planType optional for backward compatibility
+    planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
   }).index("by_price", ["price"]),
 
   // Customers (internet users)
@@ -22,6 +24,15 @@ export default defineSchema({
     routerIp: v.optional(v.string()),
     macAddress: v.optional(v.string()),
     created: v.number(),
+    // Make status optional for backward compatibility
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("inactive"),
+        v.literal("suspended"),
+      ),
+    ),
+    planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
     hotspotUsername: v.optional(v.string()),
     hotspotPassword: v.optional(v.string()),
     hotspotIp: v.optional(v.string()),
@@ -30,7 +41,8 @@ export default defineSchema({
     lastTransactionId: v.optional(v.string()),
   })
     .index("by_phone", ["phone"])
-    .index("by_hotspotUsername", ["hotspotUsername"]),
+    .index("by_hotspotUsername", ["hotspotUsername"])
+    .index("by_status", ["status"]),
 
   // Active subscriptions
   subscriptions: defineTable({
@@ -52,7 +64,32 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_expiry", ["expiryDate"]),
 
-  // Usage tracking (optional)
+  // Payments/Transactions
+  payments: defineTable({
+    transactionId: v.string(),
+    amount: v.number(),
+    phoneNumber: v.string(),
+    customerId: v.optional(v.id("customers")),
+    planId: v.optional(v.id("plans")),
+    planName: v.optional(v.string()),
+    userName: v.optional(v.string()),
+    status: v.union(
+      v.literal("completed"),
+      v.literal("pending"),
+      v.literal("failed"),
+    ),
+    paymentMethod: v.string(),
+    serviceType: v.union(v.literal("hotspot"), v.literal("pppoe")),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    metadata: v.optional(v.any()),
+  })
+    .index("by_transactionId", ["transactionId"])
+    .index("by_customer", ["customerId"])
+    .index("by_status", ["status"])
+    .index("by_createdAt", ["createdAt"]),
+
+  // Usage tracking
   usage: defineTable({
     subscriptionId: v.id("subscriptions"),
     date: v.number(),

@@ -9,6 +9,7 @@ export const registerCustomer = mutation({
     address: v.optional(v.string()),
     routerIp: v.optional(v.string()),
     macAddress: v.optional(v.string()),
+    planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
   },
   handler: async (ctx, args) => {
     // Check if customer already exists
@@ -23,6 +24,7 @@ export const registerCustomer = mutation({
 
     return await ctx.db.insert("customers", {
       ...args,
+      status: "active", // Default status for new customers
       created: Date.now(),
     });
   },
@@ -36,10 +38,34 @@ export const updateCustomer = mutation({
     address: v.optional(v.string()),
     routerIp: v.optional(v.string()),
     macAddress: v.optional(v.string()),
+    status: v.optional(
+      v.union(
+        v.literal("active"),
+        v.literal("inactive"),
+        v.literal("suspended"),
+      ),
+    ),
+    planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
   },
   handler: async (ctx, args) => {
     const { customerId, ...updates } = args;
     await ctx.db.patch(customerId, updates);
+    return customerId;
+  },
+});
+
+export const updateCustomerStatus = mutation({
+  args: {
+    customerId: v.id("customers"),
+    status: v.union(
+      v.literal("active"),
+      v.literal("inactive"),
+      v.literal("suspended"),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { customerId, status } = args;
+    await ctx.db.patch(customerId, { status });
     return customerId;
   },
 });
@@ -87,6 +113,7 @@ export const recordPayment = mutation({
       lastPaymentAmount: amount,
       lastPaymentDate: now,
       lastTransactionId: transactionId,
+      status: "active", // Ensure customer is active after payment
     });
 
     return {
