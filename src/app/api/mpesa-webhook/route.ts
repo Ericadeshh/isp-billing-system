@@ -36,7 +36,47 @@ export async function POST(request: Request) {
     const firstPlan = plans[0];
     console.log("🔥 Using plan:", firstPlan.name, "with ID:", firstPlan._id);
 
-    // 4. Try to record a test payment with REAL plan ID
+    // 4. Get or create a REAL customer
+    let customerId;
+    try {
+      // Try to find existing customer by phone
+      const existingCustomer = await convex.query(
+        api.customers.queries.getCustomerByPhone,
+        {
+          phone: body.phone || "254700000000",
+        },
+      );
+
+      if (existingCustomer) {
+        customerId = existingCustomer._id;
+        console.log("✅ Found existing customer:", customerId);
+      } else {
+        // Create new customer
+        customerId = await convex.mutation(
+          api.customers.mutations.registerCustomer,
+          {
+            name: `User-${(body.phone || "254700000000").slice(-4)}`,
+            phone: body.phone || "254700000000",
+            status: "active",
+          },
+        );
+        console.log("✅ Created new customer:", customerId);
+      }
+    } catch (customerError) {
+      console.error("❌ Customer error:", customerError);
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            customerError instanceof Error
+              ? customerError.message
+              : "Customer operation failed",
+        },
+        { status: 500 },
+      );
+    }
+
+    // 5. Record the payment with REAL customer ID
     try {
       const result = await convex.mutation(
         api.payments.mutations.recordPayment,
@@ -44,13 +84,13 @@ export async function POST(request: Request) {
           transactionId: body.transactionId || "TEST_" + Date.now(),
           amount: body.amount || 10,
           phoneNumber: body.phone || "254700000000",
-          customerId: body.customerId || "test_customer",
-          planId: firstPlan._id, // ✅ Using real ID from database
+          customerId: customerId, // ✅ This is now a REAL Convex ID
+          planId: firstPlan._id,
           planName: firstPlan.name,
-          userName: "Test User",
+          userName: `User-${(body.phone || "254700000000").slice(-4)}`,
           status: "completed",
           paymentMethod: "M-Pesa",
-          serviceType: "hotspot",
+          serviceType: firstPlan.duration <= 1 ? "hotspot" : "pppoe",
         },
       );
 
@@ -59,6 +99,7 @@ export async function POST(request: Request) {
         success: true,
         result,
         planUsed: firstPlan.name,
+        customerId: customerId,
       });
     } catch (mutationError) {
       console.error("❌ Mutation error:", mutationError);
