@@ -21,6 +21,12 @@ export const recordPayment = mutation({
   handler: async (ctx, args) => {
     const now = Date.now();
 
+    console.log(`💰 Recording payment:`, {
+      transactionId: args.transactionId,
+      amount: args.amount,
+      status: args.status,
+    });
+
     return await ctx.db.insert("payments", {
       ...args,
       createdAt: now,

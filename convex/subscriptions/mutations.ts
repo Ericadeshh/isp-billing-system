@@ -1,5 +1,6 @@
-import { mutation } from "../_generated/server";
+import { mutation, internalMutation } from "../_generated/server";
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 
 // Create new subscription after payment
 export const createSubscription = mutation({
@@ -15,9 +16,16 @@ export const createSubscription = mutation({
 
     const now = Date.now();
     // Use plan duration (in days) to calculate expiry
-    const expiryDate = now + 2 * 60 * 1000; // 2 minutes for testing
+    const expiryDate = now + plan.duration * 24 * 60 * 60 * 1000;
 
-    return await ctx.db.insert("subscriptions", {
+    console.log(`📅 Creating subscription:`, {
+      planName: plan.name,
+      planDuration: plan.duration,
+      expiryDate: new Date(expiryDate).toISOString(),
+    });
+
+    // Insert the subscription
+    const subscriptionId = await ctx.db.insert("subscriptions", {
       customerId: args.customerId,
       planId: args.planId,
       status: "active",
@@ -28,6 +36,8 @@ export const createSubscription = mutation({
       autoRenew: args.autoRenew,
       mpesaTransactionId: args.mpesaTransactionId,
     });
+
+    return subscriptionId;
   },
 });
 
@@ -85,7 +95,7 @@ export const expireSubscriptions = mutation({
   },
 });
 
-// Add this simple function
+// Check and expire a single subscription
 export const checkAndExpire = mutation({
   args: { subscriptionId: v.id("subscriptions") },
   handler: async (ctx, args) => {

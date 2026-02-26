@@ -29,9 +29,14 @@ export const registerCustomer = mutation({
       throw new Error("Customer already exists");
     }
 
+    console.log(`👤 Creating new customer:`, {
+      phone: args.phone,
+      name: args.name,
+    });
+
     return await ctx.db.insert("customers", {
       ...args,
-      status: args.status || "active", // Default to active if not provided
+      status: args.status || "active",
       created: Date.now(),
     });
   },
@@ -87,19 +92,16 @@ export const recordPayment = mutation({
   handler: async (ctx, args) => {
     const { customerId, amount, transactionId, planId } = args;
 
-    // Get customer
     const customer = await ctx.db.get(customerId);
     if (!customer) {
       throw new Error(`Customer not found: ${customerId}`);
     }
 
-    // Get plan
     const plan = await ctx.db.get(planId);
     if (!plan) {
       throw new Error(`Plan not found: ${planId}`);
     }
 
-    // Create subscription
     const now = Date.now();
     const expiryDate = now + plan.duration * 24 * 60 * 60 * 1000;
 
@@ -115,12 +117,11 @@ export const recordPayment = mutation({
       mpesaTransactionId: transactionId,
     });
 
-    // Update customer with last payment info
     await ctx.db.patch(customerId, {
       lastPaymentAmount: amount,
       lastPaymentDate: now,
       lastTransactionId: transactionId,
-      status: "active", // Ensure customer is active after payment
+      status: "active",
     });
 
     return {
