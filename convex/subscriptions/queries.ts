@@ -57,3 +57,11 @@ export const getExpiringSubscriptions = query({
       .collect();
   },
 });
+
+// Get subscription by ID
+export const getSubscriptionById = query({
+  args: { subscriptionId: v.id("subscriptions") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.subscriptionId);
+  },
+});

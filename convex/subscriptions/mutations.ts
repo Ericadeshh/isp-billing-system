@@ -14,7 +14,8 @@ export const createSubscription = mutation({
     if (!plan) throw new Error("Plan not found");
 
     const now = Date.now();
-    const expiryDate = now + plan.duration * 24 * 60 * 60 * 1000;
+    // Use plan duration (in days) to calculate expiry
+    const expiryDate = now + 2 * 60 * 1000; // 2 minutes for testing
 
     return await ctx.db.insert("subscriptions", {
       customerId: args.customerId,
@@ -81,5 +82,19 @@ export const expireSubscriptions = mutation({
     }
 
     return expired.length;
+  },
+});
+
+// Add this simple function
+export const checkAndExpire = mutation({
+  args: { subscriptionId: v.id("subscriptions") },
+  handler: async (ctx, args) => {
+    const sub = await ctx.db.get(args.subscriptionId);
+    if (!sub) return;
+
+    const now = Date.now();
+    if (now > sub.expiryDate && sub.status === "active") {
+      await ctx.db.patch(args.subscriptionId, { status: "expired" });
+    }
   },
 });

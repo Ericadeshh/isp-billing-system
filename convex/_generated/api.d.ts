@@ -22,8 +22,10 @@ import type * as payments_queries from "../payments/queries.js";
 import type * as plans_mutations from "../plans/mutations.js";
 import type * as plans_queries from "../plans/queries.js";
 import type * as seed from "../seed.js";
+import type * as subscriptions_index from "../subscriptions/index.js";
 import type * as subscriptions_mutations from "../subscriptions/mutations.js";
 import type * as subscriptions_queries from "../subscriptions/queries.js";
+import type * as test from "../test.js";
 
 import type {
   ApiFromModules,
@@ -46,8 +48,10 @@ declare const fullApi: ApiFromModules<{
   "plans/mutations": typeof plans_mutations;
   "plans/queries": typeof plans_queries;
   seed: typeof seed;
+  "subscriptions/index": typeof subscriptions_index;
   "subscriptions/mutations": typeof subscriptions_mutations;
   "subscriptions/queries": typeof subscriptions_queries;
+  test: typeof test;
 }>;
 
 /**
