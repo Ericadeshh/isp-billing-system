@@ -210,7 +210,7 @@ function HotspotSuccessContent() {
         </Link>
 
         {/* Success Header */}
-        <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-2xl p-8 mb-8 text-white">
+        <div className="bg-linear-to-r from-amber-500 to-amber-600 rounded-2xl p-8 mb-8 text-white">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <div className="flex items-center mb-2">
