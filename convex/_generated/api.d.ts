@@ -9,6 +9,7 @@
  */
 
 import type * as cleanup from "../cleanup.js";
+import type * as crons from "../crons.js";
 import type * as customers_index from "../customers/index.js";
 import type * as customers_internal from "../customers/internal.js";
 import type * as customers_mutations from "../customers/mutations.js";
@@ -35,6 +36,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   cleanup: typeof cleanup;
+  crons: typeof crons;
   "customers/index": typeof customers_index;
   "customers/internal": typeof customers_internal;
   "customers/mutations": typeof customers_mutations;

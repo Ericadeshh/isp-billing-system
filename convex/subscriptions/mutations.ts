@@ -69,29 +69,77 @@ export const renewSubscription = mutation({
   },
 });
 
-// Expire subscriptions (run as a cron job)
+// Expire subscriptions - Regular mutation (can be called manually)
 export const expireSubscriptions = mutation({
   args: {},
   handler: async (ctx) => {
     const now = Date.now();
+    console.log(`⏰ Running expiry check at ${new Date(now).toISOString()}`);
 
     // Find expired active subscriptions
     const expired = await ctx.db
       .query("subscriptions")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "active"),
-          q.lt(q.field("expiryDate"), now),
-        ),
-      )
+      .withIndex("by_status", (q) => q.eq("status", "active"))
       .collect();
 
+    const expiredSubscriptions = expired.filter((sub) => sub.expiryDate <= now);
+
+    console.log(
+      `📊 Found ${expired.length} active subscriptions, ${expiredSubscriptions.length} expired`,
+    );
+
     // Update each to expired
-    for (const sub of expired) {
+    for (const sub of expiredSubscriptions) {
+      console.log(
+        `🔄 Expiring subscription ${sub._id} (expired at ${new Date(sub.expiryDate).toISOString()})`,
+      );
       await ctx.db.patch(sub._id, { status: "expired" });
     }
 
-    return expired.length;
+    return {
+      totalActive: expired.length,
+      expiredCount: expiredSubscriptions.length,
+      timestamp: now,
+    };
+  },
+});
+
+// Internal version for cron jobs (same logic but as internalMutation)
+export const expireSubscriptionsInternal = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const now = Date.now();
+    console.log(
+      `⏰ Running internal expiry check at ${new Date(now).toISOString()}`,
+    );
+
+    // Find active subscriptions
+    const activeSubs = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_status", (q) => q.eq("status", "active"))
+      .collect();
+
+    const expiredSubscriptions = activeSubs.filter(
+      (sub) => sub.expiryDate <= now,
+    );
+
+    console.log(
+      `📊 Found ${activeSubs.length} active subscriptions, ${expiredSubscriptions.length} expired`,
+    );
+
+    // Update each to expired
+    for (const sub of expiredSubscriptions) {
+      console.log(
+        `🔄 Expiring subscription ${sub._id} (expired at ${new Date(sub.expiryDate).toISOString()})`,
+      );
+      await ctx.db.patch(sub._id, { status: "expired" });
+    }
+
+    return {
+      totalActive: activeSubs.length,
+      expiredCount: expiredSubscriptions.length,
+      timestamp: now,
+    };
   },
 });
 
@@ -100,11 +148,19 @@ export const checkAndExpire = mutation({
   args: { subscriptionId: v.id("subscriptions") },
   handler: async (ctx, args) => {
     const sub = await ctx.db.get(args.subscriptionId);
-    if (!sub) return;
+    if (!sub) return { success: false, reason: "not_found" };
 
     const now = Date.now();
     if (now > sub.expiryDate && sub.status === "active") {
       await ctx.db.patch(args.subscriptionId, { status: "expired" });
+      return { success: true, action: "expired", expiredAt: now };
     }
+
+    return {
+      success: true,
+      action: "no_action",
+      status: sub.status,
+      daysRemaining: Math.ceil((sub.expiryDate - now) / (1000 * 60 * 60 * 24)),
+    };
   },
 });

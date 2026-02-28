@@ -33,28 +33,49 @@ export const getActiveSubscriptions = query({
   handler: async (ctx) => {
     return await ctx.db
       .query("subscriptions")
-      .filter((q) => q.eq(q.field("status"), "active"))
+      .withIndex("by_status", (q) => q.eq("status", "active"))
       .collect();
   },
 });
 
-// Get expiring soon subscriptions
+// Get expiring soon subscriptions - FIXED VERSION
 export const getExpiringSubscriptions = query({
   args: { daysThreshold: v.number() },
   handler: async (ctx, args) => {
     const now = Date.now();
     const threshold = now + args.daysThreshold * 24 * 60 * 60 * 1000;
 
-    return await ctx.db
+    console.log(
+      `🔍 Checking for subscriptions expiring in next ${args.daysThreshold} days`,
+    );
+    console.log(`   Now: ${new Date(now).toISOString()}`);
+    console.log(`   Threshold: ${new Date(threshold).toISOString()}`);
+
+    // Get all active subscriptions first
+    const activeSubs = await ctx.db
       .query("subscriptions")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("status"), "active"),
-          q.gt(q.field("expiryDate"), now),
-          q.lt(q.field("expiryDate"), threshold),
-        ),
-      )
+      .withIndex("by_status", (q) => q.eq("status", "active"))
       .collect();
+
+    // Filter for those expiring within threshold
+    const expiringSoon = activeSubs.filter(
+      (sub) => sub.expiryDate > now && sub.expiryDate <= threshold,
+    );
+
+    console.log(`   Found ${expiringSoon.length} subscriptions expiring soon`);
+
+    // Enrich with customer data
+    const enriched = await Promise.all(
+      expiringSoon.map(async (sub) => {
+        const customer = await ctx.db.get(sub.customerId);
+        return {
+          ...sub,
+          customer,
+        };
+      }),
+    );
+
+    return enriched;
   },
 });
 
