@@ -16,6 +16,8 @@ import {
   DollarSign,
   RefreshCw,
   ArrowUpRight,
+  Zap, // Added for Hotspot icon
+  Globe, // Added for PPPoE icon
 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -133,6 +135,10 @@ export default function AdminDashboard() {
   const customerGrowth = 12.5;
   const revenueGrowth = 8.3;
 
+  // NEW: Calculate Hotspot and PPPoE user counts
+  const hotspotCount = customers.filter((c) => c.planType === "hotspot").length;
+  const pppoeCount = customers.filter((c) => c.planType === "pppoe").length;
+
   // Prepare revenue chart data
   const revenueData: RevenueData[] =
     payments
@@ -170,9 +176,6 @@ export default function AdminDashboard() {
   ].filter((item) => item.value > 0);
 
   // Plan distribution
-  const hotspotCount = customers.filter((c) => c.planType === "hotspot").length;
-  const pppoeCount = customers.filter((c) => c.planType === "pppoe").length;
-
   const planDistributionData: PaymentStatusData[] = [
     { name: "Hotspot", value: hotspotCount, color: "#F59E0B" },
     { name: "PPPoE", value: pppoeCount, color: "#3B82F6" },
@@ -255,10 +258,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Stats Grid - Now with 6 cards (added Hotspot and PPPoE) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
         {/* Total Customers */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
               <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -281,8 +284,51 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Hotspot Users - NEW CARD */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
+              <Zap className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+            </div>
+            <span className="text-xs font-medium text-amber-600 bg-amber-100 dark:bg-amber-900/20 px-2 py-1 rounded-full">
+              {((hotspotCount / totalCustomers) * 100 || 0).toFixed(1)}% of
+              total
+            </span>
+          </div>
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
+            Hotspot Users
+          </span>
+          <div className="flex items-end justify-between">
+            <span className="text-2xl font-bold text-amber-500">
+              {hotspotCount.toLocaleString()}
+            </span>
+            <span className="text-xs text-gray-400">Hourly/Daily plans</span>
+          </div>
+        </div>
+
+        {/* PPPoE Users - NEW CARD */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+              <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            </div>
+            <span className="text-xs font-medium text-blue-600 bg-blue-100 dark:bg-blue-900/20 px-2 py-1 rounded-full">
+              {((pppoeCount / totalCustomers) * 100 || 0).toFixed(1)}% of total
+            </span>
+          </div>
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
+            PPPoE Users
+          </span>
+          <div className="flex items-end justify-between">
+            <span className="text-2xl font-bold text-blue-500">
+              {pppoeCount.toLocaleString()}
+            </span>
+            <span className="text-xs text-gray-400">Monthly subscriptions</span>
+          </div>
+        </div>
+
         {/* Active Subscriptions */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
               <Wifi className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -308,7 +354,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Total Revenue */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900/20 rounded-xl flex items-center justify-center">
               <DollarSign className="w-6 h-6 text-amber-600 dark:text-amber-400" />
@@ -332,7 +378,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Success Rate */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 lg:col-span-1">
           <div className="flex items-center justify-between mb-4">
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />

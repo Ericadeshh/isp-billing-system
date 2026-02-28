@@ -1,0 +1,3 @@
+Update the admin/users page in the following ways:
+-ensure each card has a translucent/navy-blue theme for the background, and the text on top to be either text-amber-500, text-green-400, text-blue 400
+-ensure the plan type is not N/A, but is displayed as according to user's purchase

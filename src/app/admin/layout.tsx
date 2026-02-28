@@ -20,6 +20,7 @@ import {
   Search,
   Sun,
   Moon,
+  MessageSquare,
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -48,6 +49,7 @@ export default function AdminLayout({
     { name: "Transactions", href: "/admin/transactions", icon: CreditCard },
     { name: "MikroTik", href: "/admin/mikrotik", icon: Router },
     { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    { name: "Contact", href: "/admin/contact", icon: MessageSquare },
     { name: "Settings", href: "/admin/settings", icon: Settings },
   ];
 
