@@ -38,7 +38,7 @@ export const getActiveSubscriptions = query({
   },
 });
 
-// Get expiring soon subscriptions - FIXED VERSION
+// Get expiring soon subscriptions - FIXED to show unique customers with earliest expiry
 export const getExpiringSubscriptions = query({
   args: { daysThreshold: v.number() },
   handler: async (ctx, args) => {
@@ -51,22 +51,43 @@ export const getExpiringSubscriptions = query({
     console.log(`   Now: ${new Date(now).toISOString()}`);
     console.log(`   Threshold: ${new Date(threshold).toISOString()}`);
 
-    // Get all active subscriptions first
+    // Get all active subscriptions that are expiring within threshold
     const activeSubs = await ctx.db
       .query("subscriptions")
       .withIndex("by_status", (q) => q.eq("status", "active"))
       .collect();
 
-    // Filter for those expiring within threshold
-    const expiringSoon = activeSubs.filter(
+    const expiringSubs = activeSubs.filter(
       (sub) => sub.expiryDate > now && sub.expiryDate <= threshold,
     );
 
-    console.log(`   Found ${expiringSoon.length} subscriptions expiring soon`);
+    console.log(`   Found ${expiringSubs.length} expiring subscriptions`);
+
+    // If no expiring subscriptions, return empty array
+    if (expiringSubs.length === 0) {
+      return [];
+    }
+
+    // Group subscriptions by customer to find the earliest expiry per customer
+    const subsByCustomer = new Map();
+
+    for (const sub of expiringSubs) {
+      const existing = subsByCustomer.get(sub.customerId);
+      if (!existing || sub.expiryDate < existing.expiryDate) {
+        subsByCustomer.set(sub.customerId, sub);
+      }
+    }
+
+    // Convert map to array of unique subscriptions (earliest per customer)
+    const uniqueExpiringSubs = Array.from(subsByCustomer.values());
+
+    console.log(
+      `   After deduplication: ${uniqueExpiringSubs.length} unique customers`,
+    );
 
     // Enrich with customer data
     const enriched = await Promise.all(
-      expiringSoon.map(async (sub) => {
+      uniqueExpiringSubs.map(async (sub) => {
         const customer = await ctx.db.get(sub.customerId);
         return {
           ...sub,
@@ -75,7 +96,8 @@ export const getExpiringSubscriptions = query({
       }),
     );
 
-    return enriched;
+    // Sort by expiry date (soonest first)
+    return enriched.sort((a, b) => a.expiryDate - b.expiryDate);
   },
 });
 

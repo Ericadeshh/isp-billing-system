@@ -89,6 +89,8 @@ export async function POST(request: Request) {
     }
 
     console.log(`✅ Plan resolved: ${plan.name} (ID: ${plan._id})`);
+    const serviceType = plan.duration <= 1 ? "hotspot" : "pppoe";
+    console.log(`📋 Service type determined: ${serviceType}`);
 
     // Get or create customer with REAL phone number
     let finalCustomerId = customerId;
@@ -107,6 +109,13 @@ export async function POST(request: Request) {
       if (existingCustomer) {
         finalCustomerId = existingCustomer._id;
         console.log("✅ Found existing customer:", finalCustomerId);
+
+        // Update the customer's planType based on the purchase
+        await convex.mutation(api.customers.mutations.updateCustomer, {
+          customerId: finalCustomerId,
+          planType: serviceType,
+        });
+        console.log(`✅ Updated customer planType to ${serviceType}`);
       } else {
         console.log(`🆕 Creating new customer for phone: ${phone}`);
         finalCustomerId = await convex.mutation(
@@ -115,6 +124,7 @@ export async function POST(request: Request) {
             name: `User-${phone.slice(-4)}`,
             phone: phone,
             status: "active",
+            planType: serviceType, // Set planType on creation
           },
         );
         console.log("✅ Created new customer with ID:", finalCustomerId);
@@ -135,7 +145,7 @@ export async function POST(request: Request) {
         userName: `User-${phone.slice(-4)}`,
         status: status === "success" ? "completed" : "failed",
         paymentMethod: "M-Pesa",
-        serviceType: plan.duration <= 1 ? "hotspot" : "pppoe",
+        serviceType: serviceType,
       },
     );
     console.log(`✅ Payment recorded:`, paymentResult);
