@@ -3,8 +3,33 @@ import { NextResponse } from "next/server";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
+// Add CORS headers helper
+function addCorsHeaders(response: NextResponse) {
+  response.headers.set(
+    "Access-Control-Allow-Origin",
+    "https://mpesa-payment-app-navy.vercel.app",
+  );
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return response;
+}
+
+// Handle OPTIONS requests for CORS preflight
+export async function OPTIONS() {
+  const response = new NextResponse(null, { status: 204 });
+  response.headers.set(
+    "Access-Control-Allow-Origin",
+    "https://mpesa-payment-app-navy.vercel.app",
+  );
+  response.headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  response.headers.set("Access-Control-Allow-Headers", "Content-Type");
+  return response;
+}
+
 export async function POST(request: Request) {
   console.log("🔥🔥🔥 WEBHOOK FIRED at:", new Date().toISOString());
+  console.log("🔥 Request method:", request.method);
+  console.log("🔥 Request URL:", request.url);
   console.log("🔥 Headers:", Object.fromEntries(request.headers));
 
   try {
@@ -23,34 +48,43 @@ export async function POST(request: Request) {
 
     if (missingFields.length > 0) {
       console.error(`❌ Missing fields: ${missingFields.join(", ")}`);
-      return NextResponse.json(
-        {
-          success: false,
-          error: `Missing fields: ${missingFields.join(", ")}`,
-        },
-        { status: 400 },
+      return addCorsHeaders(
+        NextResponse.json(
+          {
+            success: false,
+            error: `Missing fields: ${missingFields.join(", ")}`,
+          },
+          { status: 400 },
+        ),
       );
     }
 
+    console.log(`🔍 Processing payment:`, {
+      transactionId,
+      amount,
+      phone,
+      planCode,
+      status,
+    });
+
     // Import API
-    const { api } = await import("../../../../convex/_generated/api");
+    const { api } = await import("@convex/_generated/api");
 
     // Get all plans
     console.log(`🔍 Fetching all plans to find match for amount: ${amount}`);
     const allPlans = await convex.query(api.plans.queries.getAllPlans);
+    console.log(`📋 Found ${allPlans.length} plans`);
 
     // Find plan that matches the amount
     const plan = allPlans.find((p) => p.price === Number(amount));
 
     if (!plan) {
       console.error(`❌ No plan found for amount: ${amount}`);
-      console.log(
-        "Available plans:",
-        allPlans.map((p) => ({ name: p.name, price: p.price })),
-      );
-      return NextResponse.json(
-        { success: false, error: "Plan not found for this amount" },
-        { status: 404 },
+      return addCorsHeaders(
+        NextResponse.json(
+          { success: false, error: "Plan not found for this amount" },
+          { status: 404 },
+        ),
       );
     }
 
@@ -68,6 +102,7 @@ export async function POST(request: Request) {
         api.customers.queries.getCustomerByPhone,
         { phone },
       );
+      console.log(`🔍 Existing customer:`, existingCustomer);
 
       if (existingCustomer) {
         finalCustomerId = existingCustomer._id;
@@ -88,53 +123,66 @@ export async function POST(request: Request) {
 
     // Record payment
     console.log("💾 Recording payment...");
-    await convex.mutation(api.payments.mutations.recordPayment, {
-      transactionId,
-      amount: Number(amount),
-      phoneNumber: phone,
-      customerId: finalCustomerId,
-      planId: plan._id,
-      planName: plan.name,
-      userName: `User-${phone.slice(-4)}`,
-      status: status === "success" ? "completed" : "failed",
-      paymentMethod: "M-Pesa",
-      serviceType: plan.duration <= 1 ? "hotspot" : "pppoe",
-    });
-    console.log(`✅ Payment recorded: ${transactionId}`);
+    const paymentResult = await convex.mutation(
+      api.payments.mutations.recordPayment,
+      {
+        transactionId,
+        amount: Number(amount),
+        phoneNumber: phone,
+        customerId: finalCustomerId,
+        planId: plan._id,
+        planName: plan.name,
+        userName: `User-${phone.slice(-4)}`,
+        status: status === "success" ? "completed" : "failed",
+        paymentMethod: "M-Pesa",
+        serviceType: plan.duration <= 1 ? "hotspot" : "pppoe",
+      },
+    );
+    console.log(`✅ Payment recorded:`, paymentResult);
 
     // Create subscription if payment successful
     if (status === "success") {
       console.log("📝 Creating subscription...");
-      await convex.mutation(api.subscriptions.mutations.createSubscription, {
-        customerId: finalCustomerId,
-        planId: plan._id,
-        mpesaTransactionId: transactionId,
-        autoRenew: plan.duration > 1,
-      });
-      console.log(`✅ Subscription created for customer: ${finalCustomerId}`);
+      const subscriptionResult = await convex.mutation(
+        api.subscriptions.mutations.createSubscription,
+        {
+          customerId: finalCustomerId,
+          planId: plan._id,
+          mpesaTransactionId: transactionId,
+          autoRenew: plan.duration > 1,
+        },
+      );
+      console.log(`✅ Subscription created:`, subscriptionResult);
     }
 
-    return NextResponse.json({
-      success: true,
-      customerId: finalCustomerId,
-      planName: plan.name,
-      message: "Webhook processed successfully",
-    });
+    return addCorsHeaders(
+      NextResponse.json({
+        success: true,
+        customerId: finalCustomerId,
+        planName: plan.name,
+        message: "Webhook processed successfully",
+      }),
+    );
   } catch (error) {
     console.error("❌ Webhook error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
-      { status: 500 },
+    return addCorsHeaders(
+      NextResponse.json(
+        {
+          success: false,
+          error:
+            error instanceof Error ? error.message : "Internal server error",
+        },
+        { status: 500 },
+      ),
     );
   }
 }
 
 export async function GET() {
-  return NextResponse.json(
-    { error: "Method not allowed. Use POST." },
-    { status: 405 },
+  return addCorsHeaders(
+    NextResponse.json(
+      { error: "Method not allowed. Use POST." },
+      { status: 405 },
+    ),
   );
 }
