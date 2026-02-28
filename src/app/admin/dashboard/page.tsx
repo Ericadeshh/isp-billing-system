@@ -539,7 +539,7 @@ export default function AdminDashboard() {
                       <p className="font-bold text-gray-300">
                         KES {payment.amount.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-400">
                         {payment.planName || payment.serviceType}
                       </p>
                     </div>
