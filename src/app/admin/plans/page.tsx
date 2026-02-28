@@ -217,7 +217,7 @@ export default function AdminPlans() {
 
     return (
       <div
-        className={`relative group bg-gradient-to-br ${colors.bg} rounded-xl p-6 border-2 ${colors.border} transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+        className={`relative group bg-linear-to-br ${colors.bg} rounded-xl p-6 border-2 ${colors.border} transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
           !plan.isActive ? "opacity-75" : ""
         }`}
       >
@@ -244,10 +244,10 @@ export default function AdminPlans() {
 
         {/* Plan Header */}
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1">
+          <span className="text-xl font-bold  text-amber-500 mb-1">
             {plan.name}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+          </span>
+          <p className="text-sm text-gray-400 dark:text-gray-400 line-clamp-2">
             {plan.description}
           </p>
         </div>
@@ -270,13 +270,13 @@ export default function AdminPlans() {
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <Gauge className={`w-4 h-4 mr-2 text-${colors.accent}-500`} />
             <span className="font-medium mr-2">Speed:</span>
-            <span className="text-gray-900 dark:text-white">{plan.speed}</span>
+            <span className="text-green-500">{plan.speed}</span>
           </div>
 
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <Clock className={`w-4 h-4 mr-2 text-${colors.accent}-500`} />
             <span className="font-medium mr-2">Duration:</span>
-            <span className="text-gray-900 dark:text-white">
+            <span className="text-green-500">
               {plan.duration < 1
                 ? `${plan.duration * 24} hours`
                 : plan.duration === 1
@@ -368,9 +368,9 @@ export default function AdminPlans() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          <span className="text-3xl font-bold text-amber-500">
             Internet Plans
-          </h1>
+          </span>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Manage your internet plans. Changes reflect immediately for
             customers.
@@ -391,7 +391,7 @@ export default function AdminPlans() {
             });
             setShowAddModal(true);
           }}
-          className="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-lg shadow-amber-200 dark:shadow-amber-900/30"
+          className="flex items-center space-x-2 bg-linear-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-lg shadow-amber-200 dark:shadow-amber-900/30"
         >
           <Plus className="w-5 h-5" />
           <span className="font-medium">Create New Plan</span>
@@ -404,7 +404,7 @@ export default function AdminPlans() {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Total Plans
           </p>
-          <p className="text-2xl font-bold text-gray-800 dark:text-white">
+          <p className="text-2xl font-bold text-white dark:text-white">
             {plans.length}
           </p>
         </div>
@@ -442,9 +442,9 @@ export default function AdminPlans() {
               <Zap className="w-6 h-6 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+              <span className="text-xl font-semibold text-amber-500">
                 Hotspot Plans
-              </h2>
+              </span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Hourly and daily passes for temporary access
               </p>
@@ -498,7 +498,7 @@ export default function AdminPlans() {
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200"
+            className="inline-flex items-center space-x-2 bg-linear-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200"
           >
             <Plus className="w-5 h-5" />
             <span>Create Your First Plan</span>
@@ -704,7 +704,7 @@ export default function AdminPlans() {
               <div className="flex space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button
                   type="submit"
-                  className="flex-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200 font-medium flex items-center justify-center space-x-2"
+                  className="flex-1 bg-linear-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl hover:from-amber-600 hover:to-amber-700 transition-all duration-200 font-medium flex items-center justify-center space-x-2"
                 >
                   <Save className="w-5 h-5" />
                   <span>{editingPlan ? "Update Plan" : "Create Plan"}</span>

@@ -73,7 +73,7 @@ export default function AdminLayout({
             <div className="w-8 h-8 bg-linear-to-r from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
               <Wifi className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-bold text-gray-800 dark:text-white">
+            <span className="text-lg font-bold text-amber-500">
               Aderoute Admin
             </span>
           </Link>
@@ -96,7 +96,7 @@ export default function AdminLayout({
                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive
                     ? "bg-linear-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-200 dark:shadow-amber-900/30"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
+                    : "text-gray-400 dark:text-gray-300 hover:bg-amber-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <item.icon
@@ -107,7 +107,7 @@ export default function AdminLayout({
                 </span>
                 {item.name === "Users" && (
                   <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                    12
+                    ?
                   </span>
                 )}
               </Link>
@@ -117,8 +117,8 @@ export default function AdminLayout({
 
         {/* Sidebar Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-          <button className="flex items-center space-x-3 px-4 py-3 w-full rounded-xl text-gray-600 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-            <LogOut className="w-5 h-5" />
+          <button className="flex items-center space-x-3 px-4 py-3 w-full rounded-xl text-gray-300 dark:text-gray-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+            <LogOut className="w-5 h-5 text-amber-500" />
             <span className="font-medium">Logout</span>
           </button>
         </div>
@@ -135,7 +135,7 @@ export default function AdminLayout({
                 onClick={() => setSidebarOpen(true)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
               >
-                <Menu className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Menu className="w-5 h-5 text-amber-500 font-bold" />
               </button>
 
               {/* Search Bar */}

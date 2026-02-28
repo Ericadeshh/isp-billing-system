@@ -218,10 +218,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Dashboard
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <span className="text-2xl font-bold text-amber-500">Dashboard</span>
+          <p className="text-sm text-gray-400 dark:text-gray-300 mt-1">
             Welcome back! Here's what's happening with your ISP today.
           </p>
         </div>
@@ -230,7 +228,7 @@ export default function AdminDashboard() {
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value as any)}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-00 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             <option value="today">Today</option>
             <option value="week">This Week</option>
@@ -272,11 +270,11 @@ export default function AdminDashboard() {
               </span>
             </div>
           </div>
-          <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
             Total Customers
-          </h3>
+          </span>
           <div className="flex items-end justify-between">
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">
+            <span className="text-2xl font-bold text-blue-400">
               {totalCustomers.toLocaleString()}
             </span>
             <span className="text-xs text-gray-400">Active: {activeCount}</span>
@@ -295,11 +293,11 @@ export default function AdminDashboard() {
               </span>
             )}
           </div>
-          <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
             Active Subscriptions
-          </h3>
+          </span>
           <div className="flex items-end justify-between">
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">
+            <span className="text-2xl font-bold text-green-600">
               {activeCount.toLocaleString()}
             </span>
             <span className="text-xs text-gray-400">
@@ -322,11 +320,11 @@ export default function AdminDashboard() {
               </span>
             </div>
           </div>
-          <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
             Total Revenue
-          </h3>
+          </span>
           <div className="flex items-end justify-between">
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">
+            <span className="text-2xl font-bold text-amber-500">
               KES {totalRevenue.toLocaleString()}
             </span>
             <span className="text-xs text-gray-400">Lifetime</span>
@@ -343,11 +341,11 @@ export default function AdminDashboard() {
               {successRate.toFixed(1)}% avg
             </span>
           </div>
-          <h3 className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          <span className="text-sm text-gray-500 font-bold dark:text-gray-400 mb-1">
             Success Rate
-          </h3>
+          </span>
           <div className="flex items-end justify-between">
-            <span className="text-2xl font-bold text-gray-800 dark:text-white">
+            <span className="text-2xl font-bold text-green-600">
               {successRate.toFixed(1)}%
             </span>
             <span className="text-xs text-gray-400">
@@ -362,9 +360,9 @@ export default function AdminDashboard() {
         {/* Revenue Chart */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+            <span className="text-lg font-semibold text-amber-500">
               Revenue Overview
-            </h2>
+            </span>
             <div className="flex items-center space-x-2">
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 Last 7 days
@@ -432,9 +430,9 @@ export default function AdminDashboard() {
 
         {/* Payment Status Distribution */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-6">
+          <span className="text-lg font-semibold text-amber-500 mb-6">
             Payment Distribution
-          </h2>
+          </span>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -486,9 +484,9 @@ export default function AdminDashboard() {
         {/* Recent Transactions */}
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+            <span className="text-lg font-semibold text-amber-500">
               Recent Transactions
-            </h2>
+            </span>
             <Link
               href="/admin/transactions"
               className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center"
@@ -559,9 +557,9 @@ export default function AdminDashboard() {
         {/* Expiring Soon */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+            <span className="text-lg font-semibold text-amber-500">
               Expiring Soon
-            </h2>
+            </span>
             {expiringSoon && expiringSoon.length > 0 && (
               <span className="text-xs bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 px-2 py-1 rounded-full">
                 {expiringSoon.length} subscriptions
@@ -622,27 +620,23 @@ export default function AdminDashboard() {
 
           {/* Quick Actions */}
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+            <span className="text-sm font-medium text-amber-500">
               Quick Actions
-            </h3>
+            </span>
             <div className="grid grid-cols-2 gap-2">
               <Link
                 href="/admin/users"
                 className="p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-center"
               >
                 <Users className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                  Manage Users
-                </span>
+                <span className="text-xs text-gray-300">Manage Users</span>
               </Link>
               <Link
                 href="/admin/plans"
                 className="p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-center"
               >
                 <Wifi className="w-4 h-4 text-amber-500 mx-auto mb-1" />
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                  Edit Plans
-                </span>
+                <span className="text-xs text-gray-300">Edit Plans</span>
               </Link>
             </div>
           </div>
@@ -652,9 +646,9 @@ export default function AdminDashboard() {
       {/* Plan Distribution */}
       {planDistributionData.filter((d) => d.value > 0).length > 0 && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-6">
+          <span className="text-lg font-semibold text-gray-800 dark:text-white mb-6">
             Customer Distribution by Plan Type
-          </h2>
+          </span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
