@@ -1,7 +1,6 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 
-// Create a new internet plan
 export const createPlan = mutation({
   args: {
     name: v.string(),
@@ -11,16 +10,17 @@ export const createPlan = mutation({
     dataCap: v.optional(v.number()),
     description: v.string(),
     planType: v.union(v.literal("hotspot"), v.literal("pppoe")),
+    isActive: v.boolean(),
   },
   handler: async (ctx, args) => {
+    console.log(`📦 Creating new plan:`, args.name);
+
     return await ctx.db.insert("plans", {
       ...args,
-      isActive: true,
     });
   },
 });
 
-// Update an existing plan
 export const updatePlan = mutation({
   args: {
     planId: v.id("plans"),
@@ -30,20 +30,40 @@ export const updatePlan = mutation({
     duration: v.optional(v.number()),
     dataCap: v.optional(v.number()),
     description: v.optional(v.string()),
-    isActive: v.optional(v.boolean()),
     planType: v.optional(v.union(v.literal("hotspot"), v.literal("pppoe"))),
+    isActive: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const { planId, ...updates } = args;
+
+    console.log(`📝 Updating plan:`, planId);
+
     await ctx.db.patch(planId, updates);
     return planId;
   },
 });
 
-// Delete a plan
 export const deletePlan = mutation({
-  args: { planId: v.id("plans") },
+  args: {
+    planId: v.id("plans"),
+  },
   handler: async (ctx, args) => {
+    console.log(`🗑️ Deleting plan:`, args.planId);
+
     await ctx.db.delete(args.planId);
+    return args.planId;
+  },
+});
+
+export const togglePlanStatus = mutation({
+  args: {
+    planId: v.id("plans"),
+    isActive: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.planId, {
+      isActive: args.isActive,
+    });
+    return args.planId;
   },
 });

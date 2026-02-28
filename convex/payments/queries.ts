@@ -4,7 +4,7 @@ import { v } from "convex/values";
 export const getAllPayments = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("payments").order("desc").take(100);
+    return await ctx.db.query("payments").order("desc").collect();
   },
 });
 
@@ -80,5 +80,26 @@ export const getRecentPayments = query({
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
     return await ctx.db.query("payments").order("desc").take(limit);
+  },
+});
+
+// ADD THIS MISSING QUERY
+export const getPaymentByTransactionId = query({
+  args: { transactionId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("payments")
+      .withIndex("by_transactionId", (q) =>
+        q.eq("transactionId", args.transactionId),
+      )
+      .first();
+  },
+});
+
+// ADD THIS MISSING QUERY
+export const getPaymentById = query({
+  args: { paymentId: v.id("payments") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.paymentId);
   },
 });

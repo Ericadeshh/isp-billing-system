@@ -9,6 +9,7 @@ export interface Plan {
   dataCap?: number;
   description: string;
   isActive: boolean;
+  planType?: "hotspot" | "pppoe";
 }
 
 export interface Customer {
@@ -20,6 +21,14 @@ export interface Customer {
   routerIp?: string;
   macAddress?: string;
   created: number;
+  status?: "active" | "inactive" | "suspended";
+  planType?: "hotspot" | "pppoe";
+  hotspotUsername?: string;
+  hotspotPassword?: string;
+  hotspotIp?: string;
+  lastPaymentAmount?: number;
+  lastPaymentDate?: number;
+  lastTransactionId?: string;
 }
 
 export interface Subscription {
@@ -33,4 +42,32 @@ export interface Subscription {
   nextPayment: number;
   autoRenew: boolean;
   mpesaTransactionId?: string;
+}
+
+export interface Payment {
+  _id: Id<"payments">;
+  transactionId: string;
+  amount: number;
+  phoneNumber: string;
+  customerId?: Id<"customers">;
+  planId?: Id<"plans">;
+  planName?: string;
+  userName?: string;
+  status: "completed" | "pending" | "failed";
+  paymentMethod: string;
+  serviceType: "hotspot" | "pppoe";
+  createdAt: number;
+  updatedAt?: number;
+  metadata?: any;
+}
+
+export interface DashboardStats {
+  totalCustomers: number;
+  activeSubscriptions: number;
+  totalRevenue: number;
+  todayRevenue: number;
+  recentPayments: Payment[];
+  expiringSoon: (Subscription & { customer?: Customer; plan?: Plan })[];
+  revenueByDay: { date: string; amount: number }[];
+  popularPlans: { planName: string; count: number; revenue: number }[];
 }

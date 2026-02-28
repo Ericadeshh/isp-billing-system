@@ -2,302 +2,348 @@
 
 import { useState } from "react";
 import {
-  Settings,
   Save,
   RefreshCw,
+  Globe,
   Bell,
   Shield,
-  Globe,
-  Mail,
+  CreditCard,
   Smartphone,
-  Lock,
-  Eye,
-  EyeOff,
+  Mail,
+  Phone,
   Wifi,
+  Database,
+  Server,
+  AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 
-export default function AdminSettingsPage() {
+export default function AdminSettings() {
   const [saving, setSaving] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   const [settings, setSettings] = useState({
     // General Settings
     siteName: "Aderoute Internet",
-    supportEmail: "support@aderoute.com",
+    siteUrl: "https://aderoute.co.ke",
+    supportEmail: "support@aderoute.co.ke",
     supportPhone: "+254 700 000 000",
 
     // M-Pesa Settings
-    mpesaBusinessCode: "174379",
-    mpesaEnvironment: "sandbox",
+    mpesaConsumerKey: "********",
+    mpesaConsumerSecret: "********",
+    mpesaPasskey: "********",
+    mpesaShortcode: "174379",
+    mpesaEnv: "sandbox",
 
-    // Router Settings
-    routerHost: "192.168.88.1",
-    routerUser: "admin",
-    routerPassword: "********",
+    // MikroTik Settings
+    mikrotikHost: "192.168.88.1",
+    mikrotikUsername: "admin",
+    mikrotikPassword: "********",
+    mikrotikPort: "8728",
 
     // Notification Settings
     emailNotifications: true,
     smsNotifications: false,
     paymentAlerts: true,
+    expiryAlerts: true,
 
-    // Security Settings
-    twoFactorAuth: false,
+    // System Settings
+    currency: "KES",
+    timezone: "Africa/Nairobi",
     sessionTimeout: "30",
+    maintenanceMode: false,
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true);
-    // Simulate save
-    setTimeout(() => {
-      setSaving(false);
-      alert("Settings saved successfully!");
-    }, 1500);
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setSaving(false);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   return (
-    <div className="p-4 sm:p-6">
-      <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
-          <Settings className="w-5 h-5 mr-2 text-amber-500" />
-          System Settings
-        </h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Configure your ISP billing system preferences
-        </p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+            Settings
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Configure your ISP billing system
+          </p>
+        </div>
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center space-x-2 bg-linear-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-200 disabled:opacity-50"
+        >
+          {saving ? (
+            <RefreshCw className="w-4 h-4 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          <span className="text-sm font-medium">
+            {saving ? "Saving..." : "Save Changes"}
+          </span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Settings Navigation */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sticky top-24">
-            <nav className="space-y-1">
-              <a
-                href="#general"
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-amber-50 hover:text-amber-600"
-              >
-                <Globe className="w-4 h-4 mr-3" />
-                General
-              </a>
-              <a
-                href="#mpesa"
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-amber-50 hover:text-amber-600"
-              >
-                <Smartphone className="w-4 h-4 mr-3" />
-                M-Pesa Integration
-              </a>
-              <a
-                href="#router"
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-amber-50 hover:text-amber-600"
-              >
-                <Wifi className="w-4 h-4 mr-3" />
-                Router Settings
-              </a>
-              <a
-                href="#notifications"
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-amber-50 hover:text-amber-600"
-              >
-                <Bell className="w-4 h-4 mr-3" />
-                Notifications
-              </a>
-              <a
-                href="#security"
-                className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-lg hover:bg-amber-50 hover:text-amber-600"
-              >
-                <Shield className="w-4 h-4 mr-3" />
-                Security
-              </a>
-            </nav>
+      {/* Success Message */}
+      {saveSuccess && (
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center">
+          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
+          <p className="text-sm text-green-600 dark:text-green-400">
+            Settings saved successfully!
+          </p>
+        </div>
+      )}
+
+      {/* Settings Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* General Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+            <Globe className="w-5 h-5 text-amber-500 mr-2" />
+            General Settings
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Site Name
+              </label>
+              <input
+                type="text"
+                value={settings.siteName}
+                onChange={(e) =>
+                  setSettings({ ...settings, siteName: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Site URL
+              </label>
+              <input
+                type="url"
+                value={settings.siteUrl}
+                onChange={(e) =>
+                  setSettings({ ...settings, siteUrl: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Support Email
+                </label>
+                <input
+                  type="email"
+                  value={settings.supportEmail}
+                  onChange={(e) =>
+                    setSettings({ ...settings, supportEmail: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Support Phone
+                </label>
+                <input
+                  type="tel"
+                  value={settings.supportPhone}
+                  onChange={(e) =>
+                    setSettings({ ...settings, supportPhone: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Settings Forms */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* General Settings */}
-          <section
-            id="general"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Globe className="w-5 h-5 mr-2 text-amber-500" />
-              General Settings
-            </h2>
-            <div className="space-y-4">
+        {/* M-Pesa Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+            <CreditCard className="w-5 h-5 text-amber-500 mr-2" />
+            M-Pesa Integration
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Environment
+              </label>
+              <select
+                value={settings.mpesaEnv}
+                onChange={(e) =>
+                  setSettings({ ...settings, mpesaEnv: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <option value="sandbox">Sandbox (Testing)</option>
+                <option value="production">Production (Live)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Consumer Key
+              </label>
+              <input
+                type="password"
+                value={settings.mpesaConsumerKey}
+                onChange={(e) =>
+                  setSettings({ ...settings, mpesaConsumerKey: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Consumer Secret
+              </label>
+              <input
+                type="password"
+                value={settings.mpesaConsumerSecret}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    mpesaConsumerSecret: e.target.value,
+                  })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Site Name
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Passkey
+                </label>
+                <input
+                  type="password"
+                  value={settings.mpesaPasskey}
+                  onChange={(e) =>
+                    setSettings({ ...settings, mpesaPasskey: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Shortcode
                 </label>
                 <input
                   type="text"
-                  value={settings.siteName}
+                  value={settings.mpesaShortcode}
                   onChange={(e) =>
-                    setSettings({ ...settings, siteName: e.target.value })
+                    setSettings({ ...settings, mpesaShortcode: e.target.value })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Support Email
-                  </label>
-                  <input
-                    type="email"
-                    value={settings.supportEmail}
-                    onChange={(e) =>
-                      setSettings({ ...settings, supportEmail: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Support Phone
-                  </label>
-                  <input
-                    type="tel"
-                    value={settings.supportPhone}
-                    onChange={(e) =>
-                      setSettings({ ...settings, supportPhone: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-              </div>
             </div>
-          </section>
+          </div>
+        </div>
 
-          {/* M-Pesa Settings */}
-          <section
-            id="mpesa"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Smartphone className="w-5 h-5 mr-2 text-amber-500" />
-              M-Pesa Integration
-            </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Business Shortcode
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.mpesaBusinessCode}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        mpesaBusinessCode: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Environment
-                  </label>
-                  <select
-                    value={settings.mpesaEnvironment}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        mpesaEnvironment: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    <option value="sandbox">Sandbox (Testing)</option>
-                    <option value="production">Production (Live)</option>
-                  </select>
-                </div>
-              </div>
+        {/* MikroTik Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+            <Server className="w-5 h-5 text-amber-500 mr-2" />
+            MikroTik Integration
+          </h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Router Host/IP
+              </label>
+              <input
+                type="text"
+                value={settings.mikrotikHost}
+                onChange={(e) =>
+                  setSettings({ ...settings, mikrotikHost: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
             </div>
-          </section>
 
-          {/* Router Settings */}
-          <section
-            id="router"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Wifi className="w-5 h-5 mr-2 text-amber-500" />
-              Router Settings
-            </h2>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Router IP/Host
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.routerHost}
-                    onChange={(e) =>
-                      setSettings({ ...settings, routerHost: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    value={settings.routerUser}
-                    onChange={(e) =>
-                      setSettings({ ...settings, routerUser: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={settings.mikrotikUsername}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      mikrotikUsername: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Password
                 </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    value={settings.routerPassword}
-                    onChange={(e) =>
-                      setSettings({
-                        ...settings,
-                        routerPassword: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 pr-10"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4 text-gray-500" />
-                    ) : (
-                      <Eye className="w-4 h-4 text-gray-500" />
-                    )}
-                  </button>
-                </div>
+                <input
+                  type="password"
+                  value={settings.mikrotikPassword}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      mikrotikPassword: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
               </div>
             </div>
-          </section>
 
-          {/* Notification Settings */}
-          <section
-            id="notifications"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Bell className="w-5 h-5 mr-2 text-amber-500" />
-              Notification Settings
-            </h2>
-            <div className="space-y-3">
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-sm text-gray-700">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                API Port
+              </label>
+              <input
+                type="text"
+                value={settings.mikrotikPort}
+                onChange={(e) =>
+                  setSettings({ ...settings, mikrotikPort: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Notification Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+            <Bell className="w-5 h-5 text-amber-500 mr-2" />
+            Notification Settings
+          </h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Email Notifications
-                </span>
+                </p>
+                <p className="text-xs text-gray-500">
+                  Receive system alerts via email
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   checked={settings.emailNotifications}
@@ -307,11 +353,22 @@ export default function AdminSettingsPage() {
                       emailNotifications: e.target.checked,
                     })
                   }
-                  className="w-5 h-5 text-amber-500 rounded focus:ring-amber-500"
+                  className="sr-only peer"
                 />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
               </label>
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-sm text-gray-700">SMS Notifications</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  SMS Notifications
+                </p>
+                <p className="text-xs text-gray-500">
+                  Send SMS alerts to customers
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   checked={settings.smsNotifications}
@@ -321,11 +378,22 @@ export default function AdminSettingsPage() {
                       smsNotifications: e.target.checked,
                     })
                   }
-                  className="w-5 h-5 text-amber-500 rounded focus:ring-amber-500"
+                  className="sr-only peer"
                 />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
               </label>
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-sm text-gray-700">Payment Alerts</span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Payment Alerts
+                </p>
+                <p className="text-xs text-gray-500">
+                  Notify on successful payments
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
                   checked={settings.paymentAlerts}
@@ -335,74 +403,173 @@ export default function AdminSettingsPage() {
                       paymentAlerts: e.target.checked,
                     })
                   }
-                  className="w-5 h-5 text-amber-500 rounded focus:ring-amber-500"
+                  className="sr-only peer"
                 />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
               </label>
             </div>
-          </section>
 
-          {/* Security Settings */}
-          <section
-            id="security"
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Shield className="w-5 h-5 mr-2 text-amber-500" />
-              Security Settings
-            </h2>
-            <div className="space-y-4">
-              <label className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <span className="text-sm text-gray-700">
-                  Two-Factor Authentication
-                </span>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Expiry Alerts
+                </p>
+                <p className="text-xs text-gray-500">
+                  Notify before subscription expires
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={settings.twoFactorAuth}
+                  checked={settings.expiryAlerts}
                   onChange={(e) =>
-                    setSettings({
-                      ...settings,
-                      twoFactorAuth: e.target.checked,
-                    })
+                    setSettings({ ...settings, expiryAlerts: e.target.checked })
                   }
-                  className="w-5 h-5 text-amber-500 rounded focus:ring-amber-500"
+                  className="sr-only peer"
                 />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
               </label>
+            </div>
+          </div>
+        </div>
+
+        {/* System Settings */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg lg:col-span-2">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
+            <Database className="w-5 h-5 text-amber-500 mr-2" />
+            System Settings
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Currency
+              </label>
+              <select
+                value={settings.currency}
+                onChange={(e) =>
+                  setSettings({ ...settings, currency: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <option value="KES">KES - Kenyan Shilling</option>
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Timezone
+              </label>
+              <select
+                value={settings.timezone}
+                onChange={(e) =>
+                  setSettings({ ...settings, timezone: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <option value="Africa/Nairobi">Nairobi (EAT)</option>
+                <option value="Africa/Johannesburg">
+                  Johannesburg (SAST)
+                </option>{" "}
+                <option value="Africa/Cairo">Cairo (EET)</option>
+                <option value="Africa/Lagos">Lagos (WAT)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Session Timeout (minutes)
+              </label>
+              <input
+                type="number"
+                value={settings.sessionTimeout}
+                onChange={(e) =>
+                  setSettings({ ...settings, sessionTimeout: e.target.value })
+                }
+                className="w-full px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500"
+                min="5"
+                max="120"
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mr-3" />
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Session Timeout (minutes)
-                </label>
-                <input
-                  type="number"
-                  value={settings.sessionTimeout}
-                  onChange={(e) =>
-                    setSettings({ ...settings, sessionTimeout: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  min="5"
-                  max="120"
-                />
+                <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                  Maintenance Mode
+                </p>
+                <p className="text-xs text-amber-600 dark:text-amber-400">
+                  When enabled, only admins can access the system
+                </p>
               </div>
             </div>
-          </section>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={settings.maintenanceMode}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    maintenanceMode: e.target.checked,
+                  })
+                }
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-amber-300 dark:peer-focus:ring-amber-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-amber-500"></div>
+            </label>
+          </div>
+        </div>
+      </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition flex items-center disabled:opacity-50"
-            >
-              {saving ? (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </>
-              )}
+      {/* Danger Zone */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border-2 border-red-200 dark:border-red-900">
+        <h2 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-4 flex items-center">
+          <AlertCircle className="w-5 h-5 mr-2" />
+          Danger Zone
+        </h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                Clear All Data
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400">
+                Permanently delete all customers, payments, and subscriptions
+              </p>
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+              Clear Data
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                Reset System
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400">
+                Reset all settings to default values
+              </p>
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+              Reset System
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div>
+              <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                Delete Account
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400">
+                Permanently delete your admin account
+              </p>
+            </div>
+            <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+              Delete Account
             </button>
           </div>
         </div>

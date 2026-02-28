@@ -65,3 +65,29 @@ export const getSubscriptionById = query({
     return await ctx.db.get(args.subscriptionId);
   },
 });
+
+// Get all subscriptions with customer and plan details
+export const getAllSubscriptions = query({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("subscriptions")
+      .order("desc")
+      .collect();
+
+    // Enrich with customer and plan data
+    const enriched = await Promise.all(
+      subscriptions.map(async (sub) => {
+        const customer = await ctx.db.get(sub.customerId);
+        const plan = await ctx.db.get(sub.planId);
+        return {
+          ...sub,
+          customer,
+          plan,
+        };
+      }),
+    );
+
+    return enriched;
+  },
+});

@@ -1,0 +1,166 @@
+📁 Complete ISP Billing System Project Structure
+isp-billing-system/
+├── .env.local
+├── .gitignore
+├── package.json
+├── README.md
+├── convex/
+│   ├── convex.config.ts
+│   ├── schema.ts
+│   ├── seed.ts
+│   ├── crons.ts
+│   ├── test.ts
+│   ├── cleanup.ts
+│   ├── customers/
+│   │   ├── index.ts
+│   │   ├── mutations.ts
+│   │   ├── queries.ts
+│   │   └── internal.ts
+│   ├── plans/
+│   │   ├── index.ts
+│   │   ├── mutations.ts
+│   │   └── queries.ts
+│   ├── subscriptions/
+│   │   ├── index.ts
+│   │   ├── mutations.ts
+│   │   └── queries.ts
+│   ├── payments/
+│   │   ├── index.ts
+│   │   ├── mutations.ts
+│   │   └── queries.ts
+│   ├── network/
+│   │   ├── index.ts
+│   │   ├── mutations.ts
+│   │   └── queries.ts
+│   └── _generated/ (auto-generated)
+│       ├── api.d.ts
+│       ├── api.js
+│       ├── dataModel.d.ts
+│       ├── server.d.ts
+│       └── server.js
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   ├── favicon.ico
+│   │   ├── api/
+│   │   │   ├── mpesa-webhook/
+│   │   │   │   └── route.ts
+│   │   │   ├── check-subscription/
+│   │   │   │   └── route.ts
+│   │   │   ├── check-customer/
+│   │   │   │   └── route.ts
+│   │   │   └── create-test-subscription/
+│   │   │       └── route.ts
+│   │   ├── admin/
+│   │   │   ├── page.tsx
+│   │   │   ├── dashboard/
+│   │   │   │   └── page.tsx
+│   │   │   ├── users/
+│   │   │   │   └── page.tsx
+│   │   │   ├── plans/
+│   │   │   │   └── page.tsx
+│   │   │   ├── transactions/
+│   │   │   │   └── page.tsx
+│   │   │   ├── mikrotik/
+│   │   │   │   └── page.tsx
+│   │   │   └── settings/
+│   │   │       └── page.tsx
+│   │   ├── dashboard/
+│   │   │   └── page.tsx
+│   │   ├── history/
+│   │   │   └── page.tsx
+│   │   ├── quick-pay/
+│   │   │   └── page.tsx
+│   │   ├── register/
+│   │   │   └── page.tsx
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   ├── hotspot/
+│   │   │   └── success/
+│   │   │       └── page.tsx
+│   │   └── pppoe/
+│   │       └── welcome/
+│   │           └── page.tsx
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── Button.tsx
+│   │   │   └── Input.tsx
+│   │   ├── payments/
+│   │   │   ├── PaymentForm.tsx
+│   │   │   └── PaymentStatus.tsx
+│   │   ├── plans/
+│   │   │   ├── PlanCard.tsx
+│   │   │   └── PlanList.tsx
+│   │   ├── ConvexClientProvider.tsx
+│   │   └── Footer.tsx
+│   ├── hooks/
+│   │   ├── usePlans.ts
+│   │   ├── useCustomer.ts
+│   │   └── useSubscription.ts
+│   ├── lib/
+│   │   ├── mikrotik.ts
+│   │   └── radius.ts
+│   ├── types/
+│   │   └── index.ts
+│   └── constants/
+│       └── index.ts
+├── public/
+│   ├── favicon.ico
+│   └── images/
+└── node_modules/ (ignored)
+
+
+📁 Complete M-Pesa Payment App Project Structure
+mpesa-payment-app/
+├── .env.local
+├── .gitignore
+├── package.json
+├── README.md
+├── convex/
+│   ├── schema.ts
+│   ├── payments.ts
+│   ├── customers/
+│   │   ├── mutations.ts
+│   │   └── queries.ts
+│   └── _generated/ (auto-generated)
+│       ├── api.d.ts
+│       ├── api.js
+│       ├── dataModel.d.ts
+│       ├── server.d.ts
+│       └── server.js
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   ├── favicon.ico
+│   │   ├── pay/
+│   │   │   └── page.tsx
+│   │   ├── history/
+│   │   │   └── page.tsx
+│   │   └── api/
+│   │       └── convex-webhook/
+│   │           └── route.ts
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── Button.tsx
+│   │   │   └── Input.tsx
+│   │   ├── payments/
+│   │   │   ├── PaymentForm.tsx
+│   │   │   └── PaymentStatus.tsx
+│   │   ├── ConvexClientProvider.tsx
+│   │   └── Footer.tsx
+│   ├── hooks/
+│   │   └── usePayment.ts
+│   ├── lib/
+│   │   └── convex.ts
+│   ├── types/
+│   │   └── index.ts
+│   └── constants/
+│       └── index.ts
+├── public/
+│   ├── favicon.ico
+│   └── images/
+└── node_modules/ (ignored)

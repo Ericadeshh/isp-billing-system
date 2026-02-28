@@ -16,7 +16,7 @@ export const getCustomerByPhone = query({
 export const getAllCustomers = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("customers").collect();
+    return await ctx.db.query("customers").order("desc").collect();
   },
 });
 
@@ -75,5 +75,13 @@ export const getCustomersByPlanType = query({
       .query("customers")
       .filter((q) => q.eq(q.field("planType"), args.planType))
       .collect();
+  },
+});
+
+// Get customer by ID
+export const getCustomerById = query({
+  args: { customerId: v.id("customers") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.customerId);
   },
 });

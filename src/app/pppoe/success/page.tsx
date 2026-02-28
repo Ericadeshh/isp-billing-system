@@ -11,7 +11,7 @@ import {
   Copy,
   Clock,
   Zap,
-  Smartphone,
+  Laptop,
   RefreshCw,
   AlertCircle,
   ArrowLeft,
@@ -19,17 +19,18 @@ import {
   Shield,
   User,
   Key,
-  Globe,
+  Settings,
+  Download,
 } from "lucide-react";
 import Link from "next/link";
 
 // Loading skeleton
-function SuccessPageSkeleton() {
+function PppoeSuccessSkeleton() {
   return (
-    <main className="min-h-screen bg-linear-to-br from-green-50 to-emerald-50 py-12">
+    <main className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50 py-12">
       <div className="container mx-auto px-4 max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-          <div className="bg-linear-to-r from-green-600 to-emerald-600 p-8 text-center">
+          <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-8 text-center">
             <div className="w-20 h-20 bg-white/20 rounded-full mx-auto mb-4 animate-pulse" />
             <div className="h-8 w-48 bg-white/20 rounded-lg mx-auto animate-pulse" />
           </div>
@@ -48,7 +49,7 @@ function SuccessPageSkeleton() {
 }
 
 // Main content component
-function HotspotSuccessContent() {
+function PppoeSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [copied, setCopied] = useState<string | null>(null);
@@ -56,6 +57,7 @@ function HotspotSuccessContent() {
   const [verificationStatus, setVerificationStatus] = useState<
     "verifying" | "success" | "failed"
   >("verifying");
+  const [showPppoeConfig, setShowPppoeConfig] = useState(false);
 
   // Get params from URL
   const transactionId = searchParams.get("transactionId");
@@ -182,15 +184,14 @@ function HotspotSuccessContent() {
     );
   }
 
-  // Generate hotspot credentials (in production, these would come from the network service)
-  const hotspotUsername =
+  // Generate PPPoE credentials
+  const pppoeUsername =
     customer.hotspotUsername ||
-    `HSPT${phone?.slice(-4)}${Math.floor(Math.random() * 1000)}`;
-  const hotspotPassword =
+    `PPPOE${phone?.slice(-4)}${Math.floor(Math.random() * 1000)}`;
+  const pppoePassword =
     customer.hotspotPassword ||
     Math.random().toString(36).substring(2, 10).toUpperCase();
-  const hotspotIp =
-    customer.hotspotIp || "192.168.1." + Math.floor(Math.random() * 200 + 50);
+  const routerIp = customer.routerIp || "192.168.1.1";
 
   // Calculate expiry time
   const expiryTime = payment.createdAt + plan.duration * 24 * 60 * 60 * 1000;
@@ -202,13 +203,54 @@ function HotspotSuccessContent() {
     setTimeout(() => setCopied(null), 2000);
   };
 
+  // Generate router configuration for different devices
+  const routerConfigs = {
+    windows: `PPPoe Connection Setup:
+1. Go to Control Panel → Network and Sharing Center
+2. Click "Set up a new connection or network"
+3. Select "Connect to the Internet" → Next
+4. Choose "Broadband (PPPoE)"
+5. Enter:
+   Username: ${pppoeUsername}
+   Password: ${pppoePassword}
+6. Click "Connect"`,
+
+    macos: `PPPoE Setup on macOS:
+1. Open System Preferences → Network
+2. Click the "+" button to add a new service
+3. Interface: PPPoE
+4. Service Name: Aderoute PPPoE
+5. Enter:
+   Account Name: ${pppoeUsername}
+   Password: ${pppoePassword}
+6. Click "Create" → "Apply"`,
+
+    linux: `PPPoE Setup on Linux (NetworkManager):
+1. Open Settings → Network
+2. Click the "+" button to add a new connection
+3. Choose "DSL/PPPoE"
+4. Enter:
+   Username: ${pppoeUsername}
+   Password: ${pppoePassword}
+5. Save and connect`,
+
+    router: `Router Configuration:
+1. Log into your router (${routerIp})
+2. Go to WAN/Internet Settings
+3. Connection Type: PPPoE
+4. Enter:
+   Username: ${pppoeUsername}
+   Password: ${pppoePassword}
+5. Save settings and reboot`,
+  };
+
   return (
-    <main className="min-h-screen bg-linear-to-br from-green-50 to-emerald-50 py-12">
+    <main className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50 py-12">
       <div className="container mx-auto px-4 max-w-md">
         {/* Success Card */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           {/* Success Header */}
-          <div className="bg-linear-to-r from-green-600 to-emerald-600 p-8 text-center relative overflow-hidden">
+          <div className="bg-linear-to-r from-blue-600 to-indigo-600 p-8 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 skew-y-12 transform -translate-x-1/2" />
             <div className="relative">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-4 backdrop-blur-sm">
@@ -217,7 +259,9 @@ function HotspotSuccessContent() {
               <h1 className="text-2xl font-bold text-white">
                 Payment Successful!
               </h1>
-              <p className="text-white/80 mt-2">Your hotspot access is ready</p>
+              <p className="text-white/80 mt-2">
+                Your PPPoE connection is ready
+              </p>
             </div>
           </div>
 
@@ -241,31 +285,16 @@ function HotspotSuccessContent() {
             </div>
           </div>
 
-          {/* Hotspot Credentials */}
-          <div className="p-6 bg-linear-to-br from-amber-50 to-orange-50">
+          {/* PPPoE Credentials */}
+          <div className="p-6 bg-linear-to-br from-blue-50 to-indigo-50">
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Wifi className="w-5 h-5 text-amber-500 mr-2" />
-              Your Hotspot Credentials
+              <Wifi className="w-5 h-5 text-blue-500 mr-2" />
+              Your PPPoE Credentials
             </h2>
 
             <div className="space-y-4">
-              {/* SSID */}
-              <div className="bg-white rounded-xl p-4 border border-amber-100">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">
-                      Network Name (SSID)
-                    </p>
-                    <p className="font-mono text-lg font-bold text-gray-800">
-                      Aderoute_Hotspot
-                    </p>
-                  </div>
-                  <Globe className="w-5 h-5 text-amber-400" />
-                </div>
-              </div>
-
               {/* Username */}
-              <div className="bg-white rounded-xl p-4 border border-amber-100">
+              <div className="bg-white rounded-xl p-4 border border-blue-100">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <p className="text-xs text-gray-500 mb-1 flex items-center">
@@ -273,12 +302,12 @@ function HotspotSuccessContent() {
                       Username
                     </p>
                     <p className="font-mono text-sm text-gray-800 break-all">
-                      {hotspotUsername}
+                      {pppoeUsername}
                     </p>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(hotspotUsername, "username")}
-                    className="ml-2 p-2 hover:bg-amber-50 rounded-lg transition-colors"
+                    onClick={() => copyToClipboard(pppoeUsername, "username")}
+                    className="ml-2 p-2 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Copy
                       className={`w-4 h-4 ${copied === "username" ? "text-green-500" : "text-gray-400"}`}
@@ -288,7 +317,7 @@ function HotspotSuccessContent() {
               </div>
 
               {/* Password */}
-              <div className="bg-white rounded-xl p-4 border border-amber-100">
+              <div className="bg-white rounded-xl p-4 border border-blue-100">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <p className="text-xs text-gray-500 mb-1 flex items-center">
@@ -296,12 +325,12 @@ function HotspotSuccessContent() {
                       Password
                     </p>
                     <p className="font-mono text-sm text-gray-800 break-all">
-                      {hotspotPassword}
+                      {pppoePassword}
                     </p>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(hotspotPassword, "password")}
-                    className="ml-2 p-2 hover:bg-amber-50 rounded-lg transition-colors"
+                    onClick={() => copyToClipboard(pppoePassword, "password")}
+                    className="ml-2 p-2 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Copy
                       className={`w-4 h-4 ${copied === "password" ? "text-green-500" : "text-gray-400"}`}
@@ -310,21 +339,23 @@ function HotspotSuccessContent() {
                 </div>
               </div>
 
-              {/* IP Address (if assigned) */}
-              <div className="bg-white rounded-xl p-4 border border-amber-100">
+              {/* Router IP */}
+              <div className="bg-white rounded-xl p-4 border border-blue-100">
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Assigned IP</p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      Router IP/Gateway
+                    </p>
                     <p className="font-mono text-sm text-gray-800">
-                      {hotspotIp}
+                      {routerIp}
                     </p>
                   </div>
                   <button
-                    onClick={() => copyToClipboard(hotspotIp, "ip")}
-                    className="p-2 hover:bg-amber-50 rounded-lg transition-colors"
+                    onClick={() => copyToClipboard(routerIp, "router")}
+                    className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
                   >
                     <Copy
-                      className={`w-4 h-4 ${copied === "ip" ? "text-green-500" : "text-gray-400"}`}
+                      className={`w-4 h-4 ${copied === "router" ? "text-green-500" : "text-gray-400"}`}
                     />
                   </button>
                 </div>
@@ -342,41 +373,103 @@ function HotspotSuccessContent() {
               <span className="font-semibold text-gray-800">{expiryDate}</span>
             </div>
 
-            {/* Connection Instructions */}
-            <div className="bg-blue-50 rounded-xl p-4 mb-4">
-              <h3 className="text-sm font-semibold text-blue-800 mb-2 flex items-center">
-                <Smartphone className="w-4 h-4 mr-2" />
-                How to Connect:
-              </h3>
-              <ol className="text-sm text-blue-700 space-y-2 list-decimal list-inside">
-                <li>Open WiFi settings on your device</li>
-                <li>Select "Aderoute_Hotspot" from available networks</li>
-                <li>Enter the username and password above when prompted</li>
-                <li>Accept the terms and conditions</li>
-                <li>You're connected! Enjoy fast internet</li>
-              </ol>
-            </div>
+            {/* Setup Instructions Toggle */}
+            <button
+              onClick={() => setShowPppoeConfig(!showPppoeConfig)}
+              className="w-full bg-blue-50 text-blue-700 py-3 rounded-xl font-medium hover:bg-blue-100 transition-all duration-200 flex items-center justify-center mb-4"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              {showPppoeConfig
+                ? "Hide Setup Instructions"
+                : "Show Setup Instructions"}
+            </button>
+
+            {/* Setup Instructions */}
+            {showPppoeConfig && (
+              <div className="space-y-4 mb-4">
+                {/* Windows */}
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                    <Laptop className="w-4 h-4 mr-2 text-blue-500" />
+                    Windows Setup
+                  </h3>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg">
+                    {routerConfigs.windows}
+                  </pre>
+                </div>
+
+                {/* macOS */}
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                    <Laptop className="w-4 h-4 mr-2 text-blue-500" />
+                    macOS Setup
+                  </h3>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg">
+                    {routerConfigs.macos}
+                  </pre>
+                </div>
+
+                {/* Linux */}
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                    <Laptop className="w-4 h-4 mr-2 text-blue-500" />
+                    Linux Setup
+                  </h3>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg">
+                    {routerConfigs.linux}
+                  </pre>
+                </div>
+
+                {/* Router */}
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                    <Settings className="w-4 h-4 mr-2 text-blue-500" />
+                    Router Setup
+                  </h3>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg">
+                    {routerConfigs.router}
+                  </pre>
+                </div>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
-                  const text = `Hotspot Credentials\nUsername: ${hotspotUsername}\nPassword: ${hotspotPassword}\nIP: ${hotspotIp}\nExpires: ${expiryDate}`;
+                  const text = `PPPoE Credentials\nUsername: ${pppoeUsername}\nPassword: ${pppoePassword}\nRouter IP: ${routerIp}\nExpires: ${expiryDate}`;
                   copyToClipboard(text, "all");
                 }}
-                className="bg-white border-2 border-amber-500 text-amber-600 py-3 rounded-xl font-medium hover:bg-amber-50 transition-all duration-200 flex items-center justify-center"
+                className="bg-white border-2 border-blue-500 text-blue-600 py-3 rounded-xl font-medium hover:bg-blue-50 transition-all duration-200 flex items-center justify-center"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Copy All
               </button>
               <Link
                 href="/dashboard"
-                className="bg-linear-to-r from-amber-500 to-amber-600 text-white py-3 rounded-xl font-medium hover:from-amber-600 hover:to-amber-700 transition-all duration-200 flex items-center justify-center"
+                className="bg-linear-to-r from-blue-500 to-indigo-600 text-white py-3 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 flex items-center justify-center"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 My Dashboard
               </Link>
             </div>
+
+            {/* Download Config */}
+            <button
+              onClick={() => {
+                const config = `[Aderoute PPPoE Configuration]\n\nCredentials:\nUsername: ${pppoeUsername}\nPassword: ${pppoePassword}\nRouter IP: ${routerIp}\n\nSetup Instructions:\n${routerConfigs.windows}\n\n${routerConfigs.macos}\n\n${routerConfigs.linux}\n\n${routerConfigs.router}`;
+                const blob = new Blob([config], { type: "text/plain" });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "aderoute-pppoe-config.txt";
+                a.click();
+              }}
+              className="w-full mt-3 bg-gray-100 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200 flex items-center justify-center"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Configuration
+            </button>
 
             {/* Security Note */}
             <div className="mt-4 flex items-center justify-center text-xs text-gray-500">
@@ -388,10 +481,7 @@ function HotspotSuccessContent() {
 
         {/* Support Link */}
         <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="text-sm text-amber-600 hover:text-amber-700"
-          >
+          <Link href="/" className="text-sm text-blue-600 hover:text-blue-700">
             ← Back to Home
           </Link>
         </div>
@@ -401,10 +491,10 @@ function HotspotSuccessContent() {
 }
 
 // Main export with Suspense
-export default function HotspotSuccessPage() {
+export default function PppoeSuccessPage() {
   return (
-    <Suspense fallback={<SuccessPageSkeleton />}>
-      <HotspotSuccessContent />
+    <Suspense fallback={<PppoeSuccessSkeleton />}>
+      <PppoeSuccessContent />
     </Suspense>
   );
 }
