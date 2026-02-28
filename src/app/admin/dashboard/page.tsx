@@ -526,7 +526,7 @@ export default function AdminDashboard() {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-800 dark:text-white">
+                        <p className="font-medium text-amber-500">
                           {customer?.name || payment.userName || "Unknown User"}
                         </p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -536,10 +536,10 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-800 dark:text-white">
+                      <p className="font-bold text-gray-300">
                         KES {payment.amount.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-gray-600">
                         {payment.planName || payment.serviceType}
                       </p>
                     </div>
@@ -582,7 +582,7 @@ export default function AdminDashboard() {
                     className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <p className="font-medium text-gray-800 dark:text-white">
+                      <p className="font-medium text-gray-600">
                         {customer?.name || "Unknown User"}
                       </p>
                       <span
