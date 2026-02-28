@@ -512,9 +512,9 @@ export default function AdminPlans() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+                <span className="text-2xl font-bold text-amber-500 ">
                   {editingPlan ? "Edit Plan" : "Create New Plan"}
-                </h2>
+                </span>
                 <button
                   onClick={() => {
                     setShowAddModal(false);
@@ -532,7 +532,7 @@ export default function AdminPlans() {
                 {/* Left Column */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-400 dark:text-gray-300 mb-2">
                       Plan Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -541,14 +541,14 @@ export default function AdminPlans() {
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                      className="w-full pl-5 pr-4 py-3  border border-gray-600 text-gray-400 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                       placeholder="e.g., 1 Hour Pass"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-400 dark:text-gray-300 mb-2">
                       Plan Type <span className="text-red-500">*</span>
                     </label>
                     <select
@@ -559,7 +559,7 @@ export default function AdminPlans() {
                           planType: e.target.value as "hotspot" | "pppoe",
                         })
                       }
-                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                      className="w-full px-4 py-3 border border-gray-700 text-gray-500 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                     >
                       <option value="hotspot">Hotspot (Hourly/Daily)</option>
                       <option value="pppoe">PPPoE (Monthly)</option>
@@ -567,7 +567,7 @@ export default function AdminPlans() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
                       Price (KES) <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -581,7 +581,7 @@ export default function AdminPlans() {
                             price: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-700 text-gray-500 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                         placeholder="100"
                         required
                         min="0"
@@ -591,7 +591,7 @@ export default function AdminPlans() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-400 dark:text-gray-300 mb-2">
                       Speed <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -602,7 +602,7 @@ export default function AdminPlans() {
                         onChange={(e) =>
                           setFormData({ ...formData, speed: e.target.value })
                         }
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                        className="w-full pl-10 pr-4 py-3  border border-gray-600 text-gray-400 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                         placeholder="e.g., 10 Mbps"
                         required
                       />
@@ -613,7 +613,7 @@ export default function AdminPlans() {
                 {/* Right Column */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
                       Duration (days) <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -627,7 +627,7 @@ export default function AdminPlans() {
                             duration: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                        className="w-full pl-10 pr-4 py-3  border border-gray-600 text-gray-400 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                         placeholder="0.0417 for 1 hour"
                         step="0.001"
                         required
@@ -640,7 +640,7 @@ export default function AdminPlans() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
                       Data Cap (GB)
                     </label>
                     <div className="relative">
@@ -656,7 +656,7 @@ export default function AdminPlans() {
                               : undefined,
                           })
                         }
-                        className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                        className="w-full pl-10 pr-4 py-3 border border-gray-700 text-gray-500 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                         placeholder="Optional"
                         min="0"
                         step="0.1"
@@ -685,7 +685,7 @@ export default function AdminPlans() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
                   Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -694,7 +694,7 @@ export default function AdminPlans() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
+                  className="w-full px-4 py-3 border border-gray-700 text-gray-500 rounded-xl bg-transparent focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all"
                   placeholder="Describe the plan features and benefits..."
                   required
                 />
@@ -715,7 +715,7 @@ export default function AdminPlans() {
                     setShowAddModal(false);
                     setEditingPlan(null);
                   }}
-                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
+                  className="flex-1 bg-gray-200 dark:bg-gray-700 text-red-500  py-3 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
                 >
                   Cancel
                 </button>

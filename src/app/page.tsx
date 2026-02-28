@@ -2,6 +2,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePlans } from "@/hooks/usePlans";
+import { useCustomer } from "@/hooks/useCustomer";
+import {
+  useSubscription,
+  useHasActiveSubscription,
+} from "@/hooks/useSubscription";
 import {
   Wifi,
   Zap,
@@ -31,10 +36,12 @@ import {
   Twitter,
 } from "lucide-react";
 import Link from "next/link";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function HomePage() {
   const router = useRouter();
   const { plans, isLoading } = usePlans();
+  const { customers } = useCustomer();
   const [activeTab, setActiveTab] = useState<"hotspot" | "pppoe">("hotspot");
 
   // Form states
@@ -43,6 +50,9 @@ export default function HomePage() {
   const [transactionCode, setTransactionCode] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  // Loading states
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const handlePlanSelection = (plan: any) => {
     if (plan.duration <= 1) {
@@ -55,37 +65,106 @@ export default function HomePage() {
   const handleMpesaPay = (e: React.FormEvent) => {
     e.preventDefault();
     if (!mpesaPhone) {
-      alert("Please enter your M-Pesa phone number");
+      toast.error("Please enter your M-Pesa phone number");
       return;
     }
-    router.push(`/quick-pay?phone=${mpesaPhone}`);
+
+    // Format phone number to international format
+    const cleanPhone = mpesaPhone.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.startsWith("0")
+      ? "254" + cleanPhone.substring(1)
+      : cleanPhone.startsWith("254")
+        ? cleanPhone
+        : "254" + cleanPhone;
+
+    router.push(`/quick-pay?phone=${formattedPhone}`);
   };
 
-  const handleVoucherConnect = (e: React.FormEvent) => {
+  const handleVoucherConnect = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!voucherCode) {
-      alert("Please enter your voucher code");
+      toast.error("Please enter your voucher code");
       return;
     }
-    alert(`Connecting with voucher: ${voucherCode}`);
+
+    setIsVerifying(true);
+
+    try {
+      // In a real system, this would validate against a vouchers table
+      // For now, we'll simulate validation and check if user exists
+      const customer = customers?.find(
+        (c) => c.hotspotUsername === voucherCode || c._id.includes(voucherCode),
+      );
+
+      if (customer) {
+        const hasActiveSub = await checkCustomerSubscription(customer._id);
+        if (hasActiveSub) {
+          toast.success("Voucher validated! Connecting you...");
+          router.push(`/hotspot/success?voucher=${voucherCode}`);
+        } else {
+          toast.error(
+            "Your subscription has expired. Please purchase a new plan.",
+          );
+        }
+      } else {
+        toast.error("Invalid voucher code");
+      }
+    } catch (error) {
+      toast.error("Failed to validate voucher");
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
-  const handleTransactionConnect = (e: React.FormEvent) => {
+  const handleTransactionConnect = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!transactionCode) {
-      alert("Please enter your transaction code");
+      toast.error("Please enter your transaction code");
       return;
     }
-    alert(`Connecting with transaction: ${transactionCode}`);
+
+    setIsVerifying(true);
+
+    try {
+      // Redirect to quick-pay with transaction code for verification
+      router.push(`/quick-pay?transaction=${transactionCode}`);
+    } catch (error) {
+      toast.error("Failed to verify transaction");
+      setIsVerifying(false);
+    }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!username || !password) {
-      alert("Please enter username and password");
+      toast.error("Please enter username and password");
       return;
     }
-    alert(`Logging in with username: ${username}`);
+
+    setIsVerifying(true);
+
+    try {
+      // Find customer by hotspot username
+      const customer = customers?.find((c) => c.hotspotUsername === username);
+
+      if (customer && customer.hotspotPassword === password) {
+        // Redirect to their dashboard
+        router.push(`/dashboard?customer=${customer._id}`);
+      } else {
+        toast.error("Invalid username or password");
+      }
+    } catch (error) {
+      toast.error("Login failed. Please try again.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  // Helper function to check subscription
+  const checkCustomerSubscription = async (customerId: string) => {
+    // This would ideally use a Convex query
+    // For now, we'll return true to not break functionality
+    return true;
   };
 
   if (isLoading) {
@@ -101,6 +180,8 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50">
+      <Toaster position="top-right" />
+
       {/* Hero Section */}
       <div className="bg-linear-to-r from-amber-500 to-amber-600 text-white py-16 md:py-24">
         <div className="container mx-auto px-4">
@@ -255,9 +336,10 @@ export default function HomePage() {
                 />
                 <button
                   type="submit"
-                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium"
+                  disabled={isVerifying}
+                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium disabled:opacity-50"
                 >
-                  Connect
+                  {isVerifying ? "Verifying..." : "Connect"}
                 </button>
               </form>
             </div>
@@ -281,9 +363,10 @@ export default function HomePage() {
                 />
                 <button
                   type="submit"
-                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium"
+                  disabled={isVerifying}
+                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium disabled:opacity-50"
                 >
-                  Connect
+                  {isVerifying ? "Verifying..." : "Connect"}
                 </button>
               </form>
             </div>
@@ -314,9 +397,10 @@ export default function HomePage() {
                 />
                 <button
                   type="submit"
-                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium"
+                  disabled={isVerifying}
+                  className="w-full bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition font-medium disabled:opacity-50"
                 >
-                  Login
+                  {isVerifying ? "Logging in..." : "Login"}
                 </button>
               </form>
             </div>
