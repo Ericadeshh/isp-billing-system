@@ -13,7 +13,7 @@ export default function AdminPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
       <div className="text-center">
         <div className="relative">
           {/* Spinner */}
@@ -34,7 +34,7 @@ export default function AdminPage() {
         {/* Progress bar */}
         <div className="w-64 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-6 mx-auto overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full animate-[progress_1s_ease-in-out_infinite]"
+            className="h-full bg-linear-to-r from-amber-500 to-amber-600 rounded-full animate-[progress_1s_ease-in-out_infinite]"
             style={{ width: "60%" }}
           />
         </div>

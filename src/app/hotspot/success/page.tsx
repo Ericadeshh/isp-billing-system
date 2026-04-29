@@ -62,7 +62,8 @@ function HotspotSuccessContent() {
   const status = searchParams.get("status");
   const amount = searchParams.get("amount");
   const phone = searchParams.get("phone");
-  const planId = searchParams.get("plan") as Id<"plans"> | null;
+  // ✅ FIX: Accept both "planId" (from ISP) and "plan" (from M-Pesa app)
+  const planId = (searchParams.get("planId") || searchParams.get("plan")) as Id<"plans"> | null;
 
   // Fetch payment details from Convex
   const payment = useQuery(
