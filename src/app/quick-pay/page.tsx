@@ -26,8 +26,7 @@ const ISP_APP_URL =
   process.env.NEXT_PUBLIC_ISP_APP_URL ||
   (process.env.NODE_ENV === "development"
     ? "http://localhost:3000"
-    : "https://isp-billing-system-sand.vercel.app");
-
+    : "https://adeguroute-sand.vercel.app");
 // Loading skeleton component
 function QuickPaySkeleton() {
   return (
